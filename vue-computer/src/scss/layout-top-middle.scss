@@ -1,0 +1,39 @@
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+}
+
+.top {
+    flex: none;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    box-shadow: 0px 1px 5px #ccc;
+    margin-bottom: 5px;
+    overflow: auto;
+}
+
+.middle {
+    flex: auto;
+    height: 100%;
+    box-shadow: 0px 1px 5px #ccc;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.bottom {
+    margin-top: 5px;
+    flex: none;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 1px 5px #ccc;
+    padding: 10px 10px 0 10px;
+    overflow: auto;
+}

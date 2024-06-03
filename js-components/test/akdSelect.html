@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="../css/public.css" />
+    <link rel="stylesheet" href="../css/font-awesome.min.css" />
+</head>
+<body>
+    <div class="container">
+        <div>
+            <akd-select value="苹果" id="test1" url="https://cc.akdoa.com/api/OrderParts/getOrderType" params="" textField="CodeName" valueField="CodeNO">
+                <!-- 
+                <p value="1">苹果</p>
+                <p value="2">桔子</p>
+                <p value="3">香蕉</p> 
+                -->
+            </akd-select>
+
+            <akd-select value="苹果" id="test2" >
+                <p value="1">苹果</p>
+                <p value="2">桔子</p>
+                <p value="3">香蕉</p> 
+                
+            </akd-select>
+        </div>
+    </div>
+
+    <script src="../components/akd-select.js"></script>
+    <script src="../components/akd-push-back.js"></script>
+
+    <script>
+        let test1 = document.querySelector("#test1");
+        console.log(test1.getAttribute("value"));
+    </script>
+</body>
+</html> 

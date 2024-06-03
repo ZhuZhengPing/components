@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="/css/public.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="from-item">
+            <h3>手机端组件</h3>
+            <p onclick="toPhoneAkdHeader()">头部导航</p>
+            <p onclick="toPhoneAkdPushBack()">左拉返回</p>
+            <p onclick="toPhoneAkdDate()">日期选择</p>
+            <p onclick="toAkdSelect()">下拉框</p>
+            <p onclick="toAkdMessage()">消息</p>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function toPhoneAkdHeader(){
+            location.href="test/akdHeader.html";
+        }
+        function toPhoneAkdPushBack(){
+            location.href="test/akdPushBack.html";
+        }
+        function toPhoneAkdDate(){
+            location.href="test/akdDatePicker.html";
+        }
+        function toAkdSelect(){
+            location.href="test/akdSelect.html";
+        }
+        function toAkdMessage(){
+            location.href="test/akdMessage.html";
+        }
+    </script>
+
+    <style type="text/css">
+        .container{
+            padding: 10px;
+            height: 100%;
+            overflow: auto;
+        }
+        .from-item{
+            line-height: 46px;
+        }   
+        h3{
+            font-size:18px;  
+        }
+        p{
+            color:white;
+            background-color: #6b4e43;
+            padding-left: 10px;
+            margin:5px 0;
+            border-radius: 4px;
+        }
+    </style>
+</body>
+</html>
