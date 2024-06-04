@@ -6,6 +6,10 @@
             </el-menu>
         </div>
         <div class="container">
+            <div class="top" style="box-shadow: none;display: flex;justify-content: flex-end;padding: 10px 0;">
+                <el-button plain @click="saveEvent" :disable="!entity"> 保存 </el-button>
+            </div>
+
             <div class="middle">
                 <el-table :data="data" stripe style="width:100%;height:100%;flex:auto;" size="small" :highlight-current-row="true">
                     <el-table-column type="index" label="序号" width="40"></el-table-column>
@@ -97,8 +101,28 @@
                 </el-table> 
             </div>
 
-            <div class="top" style="box-shadow: none;display: flex;justify-content: flex-end;padding: 10px 0;">
-                <el-button plain @click="saveEvent" :disable="!entity"> 保存 </el-button>
+            <div class="buttons">
+                <el-form style="flex:none;" :inline="true">
+                    <el-form-item>
+                        <el-button plain @click="saveEvent"> 添加修改按钮 </el-button>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button plain @click="saveEvent"> 删除按钮 </el-button>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button plain @click="saveEvent"> 审核按钮 </el-button>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button plain @click="saveEvent"> 导出按钮 </el-button>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button plain @click="saveEvent"> 自定义按钮 </el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+
+            <div class="bottom">
+                
             </div>
         </div>
     </div>
@@ -120,9 +144,6 @@
         console.log("selectAkdTableEvent",key,path);
         entity=menus.value[key].replace("V_","");
         data.value = await GetTableDetailBySql({Name:entity});
-        // data.value.map(p=>{
-        //     p.TableName = entity;
-        // });
     }
 
     function addEvent(){

@@ -72,8 +72,11 @@
         if(field.SelectDataFunction){
             if(field.SelectDataFunction.constructor.name === 'AsyncFunction'){
                 return await field.SelectDataFunction(field,value);
+            }else if(field.SelectDataFunction.constructor.name === 'Function'){
+                return field.SelectDataFunction(field,value);
+            }else if(field.SelectDataFunction.constructor.name === 'Array'){
+                return field.SelectDataFunction;
             }
-            return field.SelectDataFunction(field,value);
         }
         return [];
     }

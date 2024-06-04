@@ -72,7 +72,7 @@ create table AkdTable
 	CreateUserName nvarchar(50) not null
 )
 CREATE INDEX idx_akdtable_tablename ON AkdTable (TableName);
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'string：文本，date：日期，select：下拉框，number：数字' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AkdTable', @level2type=N'COLUMN',@level2name=N'FiledType'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'[string:文本，date:日期，select:下拉框，number;数字]' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AkdTable', @level2type=N'COLUMN',@level2name=N'FiledType'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'表配置', @level0type=N'SCHEMA', @level0name=N'dbo', @level1type=N'TABLE', @level1name=N'AkdTable';
 go
 

@@ -120,8 +120,14 @@
         if(targetField.TableFormatFunction){
             if(targetField.TableFormatFunction.constructor.name === 'AsyncFunction'){
                 return await targetField.TableFormatFunction(row,column,cellValue,index);
+            }else if(targetField.TableFormatFunction.constructor.name === 'Function'){
+                return targetField.TableFormatFunction(row,column,cellValue,index);
+            }else if(targetField.TableFormatFunction.constructor.name ==='Array'){
+                let temp = targetField.TableFormatFunction.find(p=>p.value==cellValue);
+                if(temp){
+                    return temp.text;
+                }
             }
-            return targetField.TableFormatFunction(row,column,cellValue,index);
         }
         return cellValue;
     }
