@@ -122,7 +122,10 @@
             </div>
 
             <div class="bottom">
-                
+                <temp-table :entity="entity" 
+                   :fields="fields.filter(p=>p.IsInTable)" 
+                   :buttons="buttons.filter(p=>p.ButtonType==10)"
+                   :where="where"></temp-table>
             </div>
         </div>
     </div>
@@ -130,11 +133,13 @@
 
 <script setup>
     import {reactive,ref,onMounted } from 'vue';
-    import {GetTableDetailBySql,SelectList,UpdateList,GetTableList} from '@/public/request.js'
+    import {GetTableDetailBySql,SelectList,UpdateList,GetTableList} from '@/public/request.js';
+    import tempTable from '@/template-model/temp-table.vue';
 
     let data = ref([]);
-    let entity = "";
+    let entity = ref("");
     let menus = ref([]);
+    let fields = ref([]);
     
     onMounted(async () => { 
         menus.value = await GetTableList(); 
@@ -142,8 +147,8 @@
 
     async function selectAkdTableEvent(key,path){
         console.log("selectAkdTableEvent",key,path);
-        entity=menus.value[key].replace("V_","");
-        data.value = await GetTableDetailBySql({Name:entity});
+        entity.value=menus.value[key].replace("V_","");
+        data.value = await GetTableDetailBySql({Name:entity.value});
     }
 
     function addEvent(){

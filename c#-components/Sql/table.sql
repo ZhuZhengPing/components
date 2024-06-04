@@ -60,9 +60,6 @@ create table AkdTable
 	IsRequest bit not null,
 	RequestPrompt nvarchar(100),
 
-	--FormatArray nvarchar(250),
-	--FormatCodeNo   varchar(20),
-
 	TableFormatFunction nvarchar(2500),
 	SelectDataFunction nvarchar(2500),
 	

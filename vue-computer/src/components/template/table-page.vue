@@ -16,10 +16,10 @@
 </template>
 <script setup>
     import { reactive,ref } from 'vue';
-    import { SelectFormatFields } from '../../public/request.js';
-    import { getQueryString } from '../../public/index.js';
-    import tempSearch from '../template-model/temp-search.vue';
-    import tempTable from '../template-model/temp-table.vue';
+    import { SelectFormatFields } from '@/public/request.js';
+    import { getQueryString } from '@/public/index.js';
+    import tempSearch from '@/template-model/temp-search.vue';
+    import tempTable from '@/template-model/temp-table.vue';
 
     let entity = ref(getQueryString("entity"));
     let pageSize = ref(getQueryString("pageSize"));
@@ -32,7 +32,7 @@
     async function init(){
         fields = await SelectFormatFields({
             TableName:"AkdTable",
-            Where:`TableName='${entity}'`,
+            Where:`TableName='${entity.value}'`,
             OrderBy:"OrderNum"
         });
 
