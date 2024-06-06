@@ -40,17 +40,17 @@
     });
     
     let loading = ref(false);
-    let fields=reactive([...props.fields]);
-    let data=reactive({...props.data});
-    let buttons = reactive([...props.buttons]);
+    let fields=ref([...props.fields]);
+    let data=ref({...props.data});
+    let buttons = ref([...props.buttons]);
     const emits = defineEmits(['search-event']);
     
     init();
 
     async function init() {
-        loading.value=true;
-        if(fields.length==0){
-            fields = await SelectFormatFields({
+        loading.value = true;
+        if (fields.value.length == 0) {
+            fields.value = await SelectFormatFields({
                 TableName:"AkdTable",
                 Where:`TableName='${props.entity}' and IsInSearch=1`,
                 OrderBy:"OrderNum"

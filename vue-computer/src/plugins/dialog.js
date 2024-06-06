@@ -55,19 +55,6 @@ const DialogPlugin = {
                         onCancel: dialogState.onCancel,
                         'onUpdate:visible': (val) => { dialogState.visible = val; }
                     }
-
-                    // <GlobalDialog
-                    //     entity={dialogState.entity}
-                    //     action={dialogState.action}
-                    //     fields={dialogState.fields}
-                    //     data={dialogState.data}
-                    //     visible={dialogState.visible}
-                    //     title={dialogState.title}
-                    //     width={dialogState.width}
-                    //     onConfirm={dialogState.onConfirm}
-                    //     onCancel={dialogState.onCancel}
-                    //     onUpdate: visible={(val) => { dialogState.visible = val; }}
-                    // />
                 );
             }
         });

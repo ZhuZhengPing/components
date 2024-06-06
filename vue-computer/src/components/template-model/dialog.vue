@@ -7,14 +7,14 @@
             <el-form label-position="right" :model="data" :label-width="80">
                 <el-form-item :label="item.FiledText" v-for="item in fields" :key="item.ID">
 
-                    <el-select v-if="item.FiledType=='select'" v-model="data[item.FiledName]" placeholder="" clearable style="width:100%;" :disabled="item.Disabled">
-                        <el-option v-for="d in searchFunctionEvent(item,data[item.FiledName])"
-                                   :key="d.ID"
+                    <el-select v-if="item.FiledType=='select'" v-model.trim="data[item.FiledName]" placeholder="" clearable style="width:100%;" :disabled="item.Disabled">
+                        <el-option v-for="d in selectDataFunctionEvent(item,data[item.FiledName])"
+                                   :key="d.value"
                                    :label="d.text"
                                    :value="d.value" />
                     </el-select>
 
-                    <el-input v-else-if="item.FiledType=='string'" v-model="data[item.FiledName]" :clearable="true" :disabled="item.Disabled" />
+                    <el-input v-else-if="item.FiledType=='string'" v-model.trim="data[item.FiledName]" :clearable="true" :disabled="item.Disabled" />
 
                     <el-date-picker v-else-if="['data','datetime','month','year'].includes(item.FiledType)" v-model="data[item.FiledName]" :type="item.FiledType" :clearable="true" :disabled="item.Disabled"></el-date-picker>
 
@@ -27,8 +27,7 @@
         <template #footer>
             <div class="dialog-footer">
                 <el-button @click="visible=false">取消</el-button>
-                <el-button type="danger" v-if="props.action=='edit'" plain @click="editDeleteEvent">删除</el-button>
-                <el-button type="primary" plain @click="editSaveEvent">保存</el-button>
+                <el-button type="primary" plain @click="saveEvent" v-if="">保存</el-button>
             </div>
         </template>
     </el-dialog>
@@ -52,9 +51,10 @@
     });
     const emits = defineEmits(['edit-event', 'update:visible']);
 
-    let fields=reactive([...props.fields]);
-    let data = reactive({ ...props.data });
+    let fields=ref([...props.fields]);
+    let data = ref({ ...props.data });
     let title = ref(props.title);
+    let visible = ref(props.visible);
 
     watch(() => props.data, (newValue, oldValue) => {
         data.value = {
@@ -65,69 +65,48 @@
 
     init();
     async function init(){
-        // if(fields.length>0){
-        //     return;
-        // }
-        // fields = await SelectList({
-        //     TableName:props.entity,
-        //     Where:"IsInEdit=1",
-        //     OrderBy:"OrderNum"
-        // });
-        // fields.map(p => {
-        //     p.Value = props.data[p.FiledName] === undefined ? "" : props.data[p.FiledName];
-        //     if (props.action == "select") {
-        //         p.Disabled = true;
-        //     }
-        // });
+        if (fields.value.length == 0) {
+            fields = await SelectFormatFields({
+                TableName: "AkdTable",
+                Where: `TableName='${props.entity}' and IsInEdit=1`,
+                OrderBy: "OrderNum"
+            });
+            fields.map(p => {
+                p.Value = props.data[p.FiledName] === undefined ? "" : props.data[p.FiledName];
+                if (props.action == "select") {
+                    p.Disabled = true;
+                }
+            });
+        }
 
-        // if (!title) {
-        //     title = await GetTableRemark({
-        //         Name: props.entity
-        //     });
-        //     if (props.action == "add") {
-        //         title = "添加" + title;
-        //     } else if (props.action == "edit") {
-        //         title = "修改" + title;
-        //     } else if (props.action == "select") {
-        //         title = "查询" + title;
-        //     }
-        // }
-        
+        if (!title) {
+            title.value = await GetTableRemark({
+                Name: props.entity
+            });
+            if (props.action == "add") {
+                title.value = "添加" + title.value;
+            } else if (props.action == "edit") {
+                title.value = "修改" + title.value;
+            } else if (props.action == "select") {
+                title.value = "查询" + title.value;
+            }
+        }
     }
     
-    async function searchFunctionEvent(field,value){
-        if(field.SelectDataFunction){
-            if(field.SelectDataFunction.constructor.name === 'AsyncFunction'){
-                return await field.SelectDataFunction(field,value);
+    async function selectDataFunctionEvent(targetField,value){
+        if (targetField.SelectDataFunction) {
+            if (targetField.SelectDataFunction.constructor.name === 'AsyncFunction') {
+                return await targetField.SelectDataFunction(targetField, value);
+            } else if (targetField.SelectDataFunction.constructor.name === 'Function') {
+                return targetField.SelectDataFunction(targetField, value);
+            } else if (targetField.SelectDataFunction.constructor.name === 'Array') {
+                return targetField.SelectDataFunction;
             }
-            return field.SelectDataFunction(field,value);
         }
         return [];
     }
 
-    function editDeleteEvent(){
-        ElMessageBox.confirm('确定删除吗？',"提示",{
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: '提示',
-        }).then(()=>{
-            DoDelete({
-                ID:data.ID,
-                TableName:props.entity,
-                UserName:GetUserName()
-            }).then(res=>{
-                if(res>0){
-                    ElMessage("操作成功");
-                    init();
-                    emits("menu-edit-event",res);
-                }else{
-                    ElMessage.error("操作失败，请检查网络");
-                }
-            });
-        });
-    }
-
-    async function editSaveEvent(){
+    async function saveEvent(){
         let requestFields = fields.filter(p=>p.IsRequest==true);
         let isSuccess = true;
         requestFields.forEach(p=>{
