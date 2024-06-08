@@ -36,7 +36,7 @@
             where.PageIndex=0;
         }
         if(!where.PageSize){
-            where.PageSize=20;
+            where.PageSize=10;
         }
         loadMore();
     }
