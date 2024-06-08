@@ -1,62 +1,45 @@
 <template>
-    <div class="akd-header-component">
-        <div class="left">
-            <slot name="left">
-                <i style="font-size:28px;" class="fa fa-angle-left" @click="goBack"></i>
-            </slot>
-        </div>
-        <h3>
+    <div class="akd-header">
+        <slot name="left">
+            <i class="fa fa-chevron-left" @click="goBack"></i>
+        </slot>
+        <p>
             <slot></slot>
-        </h3>
-        <div>
-            <slot name="right">
-                <i></i>
-            </slot>
-        </div>
+        </p>
+        <slot name="right">
+            <i></i>
+        </slot>  
     </div>
 </template>
-
 <script setup>
     import { useRouter } from 'vue-router'
     const router = useRouter();
-
-    function goBack() {
+    function goBack(){
         router.back();
     }
-
 </script>
-
-
-<style lang="scss">
-    @import "../../scss/public";
-
-    .akd-header-component {
-        flex: none;
-        height: $line-height-big;
-        background-color: $color-header;
-        color: white;
+<style scoped lang="scss">
+    .akd-header {
+        height: 50px;
+        line-height: 50px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        div {
-            flex: none;
-            width: $line-height-big;
-            height: 100%;
-            i {
-                height: 100%;
-                width: 100%;
-                display: inline-block;
-                text-align: center;
-                font-size: 20px;
-                line-height: $line-height-big;
-            }
+        background-color: #f17a06;
+        position: relative;
+        color: #fff;
+        i{
+            width: 50px;
+            text-align: center;
+            height: inherit;
+            line-height: inherit;
+            font-size: 20px;
         }
-        h3 {
+        p{
             flex: auto;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            line-height: inherit;
         }
     }
 </style>

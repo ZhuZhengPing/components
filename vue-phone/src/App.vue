@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" v-akd-touch>
         <div class="from-item">
             <h3>手机端组件</h3>
             <p @click="toAkdHeader">头部导航</p>

@@ -50,10 +50,11 @@
 
     watch(() => props.where, (newValue, oldValue) => {
         where.value = [
+            ...where,
             ...newValue
         ];
         getData();
-    });
+    },{deep: true});
 
     init();
     async function init(){

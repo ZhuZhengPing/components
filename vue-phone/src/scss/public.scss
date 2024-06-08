@@ -34,5 +34,24 @@ html{
         p,h1,h2,h3,h4,h5{
             margin:0;
         }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        @-webkit-keyframes rotate {
+            from {
+                -webkit-transform: rotate(0);
+            }
+
+            to {
+                -webkit-transform: rotate(360deg);
+            }
+        }
     }
 }
