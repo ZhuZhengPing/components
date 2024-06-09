@@ -16,10 +16,12 @@ namespace c__components.Controllers
     {
         private DapperHelper _dapper;
         private SelectRepository _select;
-        public SelectController(DapperHelper dapper, SelectRepository select)
+        private TableRepository _table;
+        public SelectController(DapperHelper dapper, SelectRepository select, TableRepository table)
         {
             this._dapper = dapper;
             this._select = select;
+            this._table = table;
         }
 
         [HttpPost]     
@@ -31,12 +33,36 @@ namespace c__components.Controllers
         [HttpPost]
         public async Task<IEnumerable<dynamic>> SelectList(GetByIDAndTableString model)
         {
+            if (string.IsNullOrWhiteSpace(model.OrderBy))
+            {
+                var entityTable = await _table.GetTableFields(model.TableName);
+                if (entityTable.Any(p => p.FiledName == "OrderNum"))
+                {
+                    model.OrderBy = "OrderNum desc";
+                }
+                else
+                {
+                    model.OrderBy = "ID desc";
+                }
+            }
             return await _select.SelectList(model);
         }
 
         [HttpPost]
         public async Task<DapperPageModel<dynamic>> SelectListPages(GetPageList model)
         {
+            if (string.IsNullOrWhiteSpace(model.OrderBy))
+            {
+                var entityTable = await _table.GetTableFields(model.TableName);
+                if (entityTable.Any(p => p.FiledName == "OrderNum"))
+                {
+                    model.OrderBy = "OrderNum desc,ID desc";
+                }
+                else
+                {
+                    model.OrderBy = "ID desc";
+                }
+            }
             return await _select.SelectListPages(model);
         }
     }

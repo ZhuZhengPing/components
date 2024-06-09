@@ -2,7 +2,7 @@
     <div class="container">
         <div class="top" v-if="form.search.length>0">
             <temp-search :entity="entity" 
-                    :fields="fields.filter(p=>p.IsInSearch)" 
+                    :fields="fields.filter(p=>p.IsInSearch>0)" 
                     :buttons="buttons.filter(p=>p.ButtonType==20)" @search-event="searchEvent"></temp-search>
         </div>
 
@@ -16,10 +16,10 @@
 </template>
 <script setup>
     import { reactive,ref } from 'vue';
-    import { SelectFormatFields } from '@/public/request.js';
+    import { SelectFormatFields } from '@/http/index.js';
     import { getQueryString } from '@/public/index.js';
-    import tempSearch from '@/template-model/temp-search.vue';
-    import tempTable from '@/template-model/temp-table.vue';
+    import tempSearch from '@/components/template-model/temp-search.vue';
+    import tempTable from '@/components/template-model/temp-table.vue';
 
     let entity = ref(getQueryString("entity"));
     let pageSize = ref(getQueryString("pageSize"));
@@ -32,14 +32,12 @@
     async function init(){
         fields = await SelectFormatFields({
             TableName:"AkdTable",
-            Where:`TableName='${entity.value}'`,
-            OrderBy:"OrderNum"
+            Where:`TableName='${entity.value}'`
         });
 
         buttons = await SelectFormatFields({
             TableName:"AkdTableButton",
-            Where:"TableName='AkdTableButton'",
-            OrderBy:"OrderNum"
+            Where:"TableName='AkdTableButton'"
         });
     }
 

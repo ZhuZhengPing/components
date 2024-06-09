@@ -23,11 +23,11 @@
 </template>
 <script setup>
     import { reactive,ref } from 'vue';
-    import { SelectList } from '@/public/request.js';
+    import { SelectList } from '@/http/index.js';
     import { getQueryString } from '@/public/index.js';
-    import tempSearch from '@/template-model/temp-search.vue';
-    import tempTable from '@/template-model/temp-table.vue';
-    import tempTabs from '@/template-model/temp-tabs.vue';
+    import tempSearch from '@/components/template-model/temp-search.vue';
+    import tempTable from '@/components/template-model/temp-table.vue';
+    import tempTabs from '@/components/template-model/temp-tabs.vue';
 
     let entity = ref(getQueryString("entity"));
     let pageSize = ref(getQueryString("pageSize"));
@@ -41,14 +41,12 @@
 
     async function init(){
         fields = await SelectList({
-            TableName:props.entity,
-            OrderBy:"OrderNum"
+            TableName:props.entity
         });
 
         buttons = await SelectList({
             TableName:"AkdTableButton",
-            Where:"TableName='AkdTableButton'",
-            OrderBy:"OrderNum"
+            Where:"TableName='AkdTableButton'"
         });
     }
 

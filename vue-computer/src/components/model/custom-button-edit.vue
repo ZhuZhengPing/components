@@ -27,7 +27,7 @@
 </template>
 <script setup>
     import {ref} from 'vue';
-    import{SelectList,DoDelete,Update,GetUserName} from '@/public/request.js';
+    import{SelectList,DoDelete,Update,GetUserName} from '@/http/index.js';
     const props = defineProps({
         data:Object
     });
@@ -37,8 +37,7 @@
         // ButtonType: 10：菜单按钮，20：列表按钮
         SelectList({
             TableName:"AkdButton",
-            Where:`ForeignKeyID=${props.ID}&ButtonType=${props.ButtonType}`,
-            OrderBy:"OrderNum"
+            Where:`ForeignKeyID=${props.ID}&ButtonType=${props.ButtonType}`
         }).then(res=>{
             list.value = res;
         });

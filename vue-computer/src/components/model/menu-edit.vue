@@ -30,7 +30,7 @@
 
 <script setup>
     import {ref,watch} from 'vue';
-    import{SelectList,DoDelete,Add,Update,GetUserName} from '@/public/request.js';
+    import{SelectList,DoDelete,Add,Update,GetUserName} from '@/http/index.js';
     import {ElInput,ElSelect,ElForm,ElFormItem,ElMessage,ElMessageBox} from 'element-plus';
 
     let parentData = ref(null);
@@ -55,7 +55,7 @@
     function init(){
         SelectList({
             TableName:"AkdMenu",
-            OrderBy:"ParentID,OrderNum"
+            OrderBy:"ParentID,OrderNum desc"
         }).then(res=>{
             parentData.value = res.filter(p=>p.ParentID == 0);
         });

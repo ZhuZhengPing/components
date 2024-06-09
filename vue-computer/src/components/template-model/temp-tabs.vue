@@ -15,8 +15,8 @@
         </el-tabs>
 </template>
 <script setup>
-    import { reactive,ref } from 'vue';
-    import { SelectFormatFields } from '@/public/request.js';
+    import { reactive,ref,watch } from 'vue';
+    import { SelectFormatFields } from '@/http/index.js';
     import tempTable from '@/components/template-model/temp-table.vue';
     import tempButtons from '@/components/template-model/temp-buttons.vue';
 
@@ -26,13 +26,17 @@
         entitys:Array
     });
 
+    watch(()=>props.parentData.ID,(newValue,oldValue)=>{
+        where[props.parentEntity+"ID"]=newValue;
+    },{deep:true});
+
     let loading = ref(false);
     let tabName = ref("");
     let fields=reactive([]);
     let buttons=reactive([]);
     let entitys = reactive([]);
     let where = reactive({});
-    where[props.parentEntity+"ID"]=props.parentRow.ID;
+    
     let entityRef={};
 
     init();
@@ -43,7 +47,7 @@
         let tempFields=[];
         let tempButtons=[];
         let tempTableName="";
-        props.entitys.map(p=>{
+        props.entitys.map(async p=>{
             tempTableName=await GetTableRemark({Name:p});
             entitys.push({
                 entity:p,
@@ -52,15 +56,13 @@
 
             tempFields=await SelectFormatFields({
                 TableName:"AkdTable",
-                Where:`TableName='${p}'`,
-                OrderBy:"OrderNum"
+                Where:`TableName='${p}'`
             });
             fields.push(...tempFields);
 
             tempButtons = await SelectFormatFields({
                 TableName:"AkdTableButton",
-                Where:`TableName='${p}'`,
-                OrderBy:"OrderNum"
+                Where:`TableName='${p}'`
             });
             buttons.push(...tempButtons);
         });

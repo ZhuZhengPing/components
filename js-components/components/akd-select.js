@@ -1,29 +1,22 @@
 ;
 /**
  * zzp write 2024-02-05 
- * bu chong fu zhao lun zi
  */
 (function(app){
     'use strict';
 
     app.registerSelect = function(select){
         select.className += " akd-select-component";
-        let input = document.createElement("input");
-        input.type="text";
-        //input.setAttribute("readonly", "true");
-        input.addEventListener("click",togglePop,false);
+        let input = document.createElement("div");
+        input.className="input";
+        select.addEventListener("click",togglePop,false);
         select.appendChild(input);
 
         // properties
         if(select.getAttribute("placeholder")){
             input.setAttribute("placeholder",select.getAttribute("placeholder"));
         }
-        let disabled = select.getAttribute("disabled");
-        if(disabled){
-            input.setAttribute("disabled",disabled);
-        }
-        let value = select.getAttribute("value")||"";
-        input.value=value;
+
 
         let i = document.createElement("i");
         i.className="fa fa-angle-down";
@@ -31,8 +24,26 @@
 
         let pop = document.createElement("div");
         pop.style.display="none";
+        pop.className="pop";
         pop.addEventListener("click",selectHandler,false);
         select.appendChild(pop);
+
+        let empty = select.getAttribute("empty");
+        if(empty){
+            let emptyP = document.createElement("p");
+            emptyP.setAttribute("value","");
+            emptyP.innerHTML = empty;
+            pop.appendChild(emptyP);
+
+            input.innerHTML = empty;
+        }
+
+        let value = select.getAttribute("value")||"";
+        if(value){
+            input.innerHTML=value;
+        }
+
+        let callback = select.getAttribute("@click");
 
         // if url is specified
         let url = select.getAttribute("url");
@@ -71,12 +82,12 @@
                     line-height: 42px;
                     display:block;
                 }
-                .akd-select-component input{
+                .akd-select-component .input{
                     height: 100%;
                     width: 100%;
                     border-radius: 3px;
                     padding: 0 10px;
-                    border: solid 1px lightgray;
+                    border: none;
                     vertical-align: bottom;
                     font-size: 14px;
                 }
@@ -90,7 +101,7 @@
                     text-align: center;
                     line-height: inherit;
                 }
-                .akd-select-component div{
+                .akd-select-component .pop{
                     position: absolute;
                     z-index: 99999;
                     padding: 0 5px;
@@ -111,6 +122,7 @@
                     margin: 0;
                     padding: 5px 15px;
                     font-size: 15px;
+                    color:black;
                 }
                 .akd-select-component p:not(:last-child) {
                     border-bottom: solid 1px #efefef;
@@ -121,9 +133,6 @@
 
         function togglePop(e){
             e.stopPropagation();
-            if(disabled){
-                return;
-            }
             let isInBotton = e.target.getBoundingClientRect().y > window.innerHeight / 2;
             if(isInBotton){
                 pop.className += " in-bottom";
@@ -136,11 +145,20 @@
         }
 
         function selectHandler(e){
+            e.stopPropagation();
             if(pop.style.display=="none") return;
             const target = getTarget(e.target, 'p');
-            input.value = target.innerHTML;
-            select.setAttribute("value",target.getAttribute("value"));
+            input.innerHTML = target.innerHTML;
+            let tempValue = target.getAttribute("value");
+            select.setAttribute("value",tempValue);
             pop.style.display="none";
+
+            if(callback){
+                if(typeof(callback)=="string"){
+                    callback = eval('('+callback+')');
+                }
+                callback(tempValue,input.innerHTML);
+            }
         }
     }
 

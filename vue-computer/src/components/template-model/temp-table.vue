@@ -12,7 +12,8 @@
                 <template v-if="buttons.length">
                     <el-table-column label="操作" width="90" align="center" v-if="btn in buttons" :key="'btn'+btn.ID">
                         <template #default="scope">
-                            <el-button v-if="!btn.ButtonVisibleStatus || btn.ButtonVisibleStatus.includes(scope.row.Status)" type="primary" plain @click="tableButtonEvent(btn,scope.row)" style="width:60px;">{{btn.ButtonText}}</el-button>
+                            <el-button v-if="!btn.ButtonVisibleStatus || btn.ButtonVisibleStatus.includes(scope.row.Status)" type="primary" plain 
+                            @click="tableButtonEvent(scope.row,form.fields)" style="width:60px;">{{btn.ButtonText}}</el-button>
                         </template>
                     </el-table-column>
                 </template>
@@ -28,7 +29,7 @@
 <script setup>
 
     import {reactive,watch} from 'vue';
-    import {SelectList,SelectListPages,GetUserName,SelectFormatFields} from '@/public/request.js';
+    import {SelectList,SelectListPages,GetUserName,SelectFormatFields} from '@/http/index.js';
     import {formatDateByType} from '@/public/index.js';
     
     const props = defineProps({
@@ -62,8 +63,7 @@
         if(fields.length==0){
             fields = await SelectFormatFields({
                 TableName:"AkdTable",
-                Where:`TableName='${props.entity}'`,
-                OrderBy:"OrderNum"
+                Where:`TableName='${props.entity}'`
             });
         }
         if(props.action == "edit" || props.action == "select"){
@@ -78,8 +78,7 @@
         if(buttons.length==0){
             buttons = await SelectFormatFields({
                 TableName:"AkdTableButton",
-                Where:`TableName='${props.entity}' and ButtonType=10`,
-                OrderBy:"OrderNum"
+                Where:`TableName='${props.entity}' and ButtonType=10`
             });
         }
 
@@ -138,9 +137,9 @@
         return formatDateByType(cellValue,targetField.FiledType);
     }
 
-    // button：按钮表格实体，columns:
-    function tableButtonEvent(_fields,_values){
-        return _fields.ButtonFunction(_fields,_values);
+    // _fields：按钮的类型，values:当前实体对象
+    function tableButtonEvent(_data,_fields){
+        return _fields.ButtonFunction(_data,_fields,props.entity);
     }
 
     function pageEvent(val){

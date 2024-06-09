@@ -61,7 +61,7 @@
 </template>
 <script setup>   
     import {ref} from 'vue';
-    import{SelectList,Update,GetUserName} from '@/public/request.js';
+    import{SelectList,Update,GetUserName} from '@/http/index.js';
     import{formatDateTime} from '@/public/index.js';
     // import menuEdit from '@/model/menu-edit.vue';
     import {Folder,Menu} from '@element-plus/icons-vue'

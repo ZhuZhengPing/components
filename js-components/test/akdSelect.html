@@ -10,7 +10,7 @@
 <body>
     <div class="container">
         <div>
-            <akd-select value="苹果" id="test1" url="https://cc.akdoa.com/api/OrderParts/getOrderType" params="" textField="CodeName" valueField="CodeNO">
+            <akd-select value="苹果" id="test1" url="https://cc.akdoa.com/api/OrderParts/getOrderType" params="" textField="CodeName" valueField="CodeNO" emptyText="请选择" @click="selectEvent"> 
                 <!-- 
                 <p value="1">苹果</p>
                 <p value="2">桔子</p>
@@ -18,7 +18,7 @@
                 -->
             </akd-select>
 
-            <akd-select value="苹果" id="test2" >
+            <akd-select value="苹果" id="test2"  @click="selectEvent">
                 <p value="1">苹果</p>
                 <p value="2">桔子</p>
                 <p value="3">香蕉</p> 
@@ -27,12 +27,17 @@
         </div>
     </div>
 
-    <script src="../components/akd-select.js"></script>
-    <script src="../components/akd-push-back.js"></script>
-
     <script>
         let test1 = document.querySelector("#test1");
         console.log(test1.getAttribute("value"));
+
+        function selectEvent(value,text){
+            console.log(value,text);
+        }
     </script>
+
+    <script src="../components/akd-select.js"></script>
+    <script src="../components/akd-push-back.js"></script>
+
 </body>
 </html> 

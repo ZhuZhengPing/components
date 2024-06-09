@@ -11,7 +11,7 @@
             </div>
 
             <div class="middle">
-                <el-table :data="data" stripe style="width:100%;height:100%;flex:auto;" size="small" :highlight-current-row="true">
+                <el-table :data="fields" stripe style="width:100%;height:100%;flex:auto;" size="small" :highlight-current-row="true">
                     <el-table-column type="index" label="序号" width="40"></el-table-column>
                     
                     <el-table-column label="字段" prop="FiledName" />
@@ -104,60 +104,109 @@
             <div class="buttons">
                 <el-form style="flex:none;" :inline="true">
                     <el-form-item>
-                        <el-button plain @click="saveEvent"> 添加修改按钮 </el-button>
+                        <el-button plain @click="addButtonEvent"> 添加按钮 </el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button plain @click="saveEvent"> 删除按钮 </el-button>
+                        <el-button plain @click="editButtonEvent"> 修改按钮 </el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button plain @click="saveEvent"> 审核按钮 </el-button>
+                        <el-button plain @click="deleteButtonEvent"> 删除按钮 </el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button plain @click="saveEvent"> 导出按钮 </el-button>
+                        <el-button plain @click="auditButtonEvent"> 审核按钮 </el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button plain @click="saveEvent"> 自定义按钮 </el-button>
+                        <el-button plain @click="exportButtonEvent"> 导出按钮 </el-button>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button plain @click="customButtonEvent"> 自定义按钮 </el-button>
                     </el-form-item>
                 </el-form>
             </div>
 
             <div class="bottom">
-                <temp-table :entity="entity" 
-                   :fields="fields.filter(p=>p.IsInTable)" 
-                   :buttons="buttons.filter(p=>p.ButtonType==10)"
-                   :where="where"></temp-table>
+                <el-table v-loading="loading" :data="buttons" style="width: 100%;height:100%;flex:auto;" highlight-current-row empty-text="暂无数据">
+                    <el-table-column type="index" label="序号" width="40"></el-table-column>
+
+                    <el-table-column label="删除" width="90" align="center">
+                        <template #default="scope">
+                            <el-button type="primary" plain @click="editButtonEvent(scope.row)" style="width:60px;">修 改</el-button>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column type="index" label="位置" prop="ButtonType" width="80" :formatter="buttonTypeEvent"></el-table-column>
+                    <el-table-column type="index" label="名称" prop="ButtonText" width="100"></el-table-column>
+                    <el-table-column type="index" label="可见状态([10,20])" prop="ButtonVisibleStatus" width="120"></el-table-column>
+                    <el-table-column type="index" label="按钮事件" prop="ButtonFunction" width="250"></el-table-column>
+                    <el-table-column type="index" label="创建人" prop="CreateUserName" width="80"></el-table-column>
+                    <el-table-column type="index" label="创建时间" prop="CreateTime" width="110" :formatter="formatDateTime"></el-table-column>
+
+                    <el-table-column label="删除" width="90" align="center">
+                        <template #default="scope">
+                            <el-button type="danger" plain @click="deleteButtonEvent(scope.row)" style="width:60px;">删 除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
             </div>
         </div>
     </div>
+
+    <temp-edit 
+            v-if="tempEditModel.show"
+            :entity="tempEditModel.entity"
+            :action="tempEditModel.action"
+            :fields="tempEditModel.fields"
+            :data="tempEditModel.data"
+            @temp-edit-event="tempEditEvent"
+            ></temp-edit>
 </template>
 
 <script setup>
     import {reactive,ref,onMounted } from 'vue';
-    import {GetTableDetailBySql,SelectList,UpdateList,GetTableList} from '@/public/request.js';
-    import tempTable from '@/template-model/temp-table.vue';
+    import {GetTableDetailBySql,SelectList,UpdateList,GetTableList,Add} from '@/http/index.js';
+    import tempTable from '@/components/template-model/temp-table.vue';
+    import {formatDateTime} from '@/public/index.js';
+    import tempEdit from '@/components/template-model/temp-edit.vue';
 
-    let data = ref([]);
     let entity = ref("");
     let menus = ref([]);
     let fields = ref([]);
+    let buttons = ref([]);
+
+    // 注入编辑模态窗口供子组件调用
+    let tempEditModel = ref({
+        show:false,
+        entity:"",
+        action:"",
+        fields:[],
+        data:{}
+    });
     
     onMounted(async () => { 
         menus.value = await GetTableList(); 
     });
 
     async function selectAkdTableEvent(key,path){
-        console.log("selectAkdTableEvent",key,path);
         entity.value=menus.value[key].replace("V_","");
-        data.value = await GetTableDetailBySql({Name:entity.value});
+        fields.value = await GetTableDetailBySql({Name:entity.value});
+        await initButtons();
     }
 
-    function addEvent(){
-        const maxValue = data.value.reduce((max, obj) => Math.max(max, obj.OrderNum), Number.NEGATIVE_INFINITY);
-        data.value.push({
-            OrderNum:maxValue
+    async function initButtons(){
+        buttons.value = await SelectList({
+            TableName:"AkdTableButton",
+            Where:`TableName=${entity.value}`,
+            OrderNum:"OrderNum"
         });
     }
 
+    // function addEvent(){
+    //     const maxValue = data.value.reduce((max, obj) => Math.max(max, obj.OrderNum), Number.NEGATIVE_INFINITY);
+    //     data.value.push({
+    //         OrderNum:maxValue
+    //     });
+    // }
+    
     async function saveEvent(){
         let d = await UpdateList(data.value);
         if(d>0){
@@ -167,17 +216,63 @@
         }
     }
 
-    async function doDeleteEvent(row,index){
-        if(row.ID){
-            let d = await DeleteList({ID:row.ID});
-            if(d>0){
-                data.value.splice(index, 1);
-            }else{
-                ElMessage.error('操作失败，请重试');
-            }
+    function addButtonEvent(){
+        const maxValue = fields.value.reduce((max, obj) => Math.max(max, obj.OrderNum), Number.NEGATIVE_INFINITY);
+        let tempButtonRow = {
+            ButtonType:10,
+            TableName:entity.value,
+            ButtonText:"添加",
+            ButtonVisibleStatus:"[10,20,30,40,50,60,70,80,90,100]",
+            ButtonFunction:JSON.stringify(addButtonTemplete),
+            OrderNum:minValue+10
+        };
+        let d = await Add(tempButtonRow);
+        if(d>0){
+            ElMessage.success('操作成功');
+            await initButtons();
         }else{
-            data.value.splice(index, 1);
+            ElMessage.error('操作失败，请重试');
         }
+    }
+    function addButtonTemplete(_entit,_data,_e){
+
+    }
+
+    async function editButtonEvent(){
+        const maxValue = fields.value.reduce((max, obj) => Math.max(max, obj.OrderNum), Number.NEGATIVE_INFINITY);
+        let tempButtonRow = {
+            ButtonType:10,
+            TableName:entity.value,
+            ButtonText:"编辑",
+            ButtonVisibleStatus:"[10,20,30]",
+            ButtonFunction:JSON.stringify(editButtonTemplete),
+            OrderNum:minValue+10
+        };
+        let d = await Add(tempButtonRow);
+        if(d>0){
+            ElMessage.success('操作成功');
+            await initButtons();
+        }else{
+            ElMessage.error('操作失败，请重试');
+        }
+    }
+    function editButtonTemplete(_data,_fields,_entity){
+        tempEditModel.value.entity=_entity;
+        tempEditModel.value.action="edit";
+        tempEditModel.value.fields=_fields;
+        tempEditModel.value.data=_data;
+        tempEditModel.value.show=true;
+    }
+
+    function buttonTypeEvent(row){
+        if(row.ButtonType==10){
+            return "表格内按钮";
+        }
+        return "表格外按钮";
+    }
+
+    async function tempEditEvent(e){
+        await initButtons();
     }
 </script>
 

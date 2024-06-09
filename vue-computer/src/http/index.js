@@ -1,4 +1,4 @@
-import http from "@/public/http.js"
+import http from "@/http/http.js"
 
 export function DoLogin(data){
     return http.post('/api/User/DoLogin',data);
@@ -120,8 +120,6 @@ export function Select (data){
 export function SelectList(data){
     return http.post('/api/Select/SelectList',data);
 }
-
-
 
 export function SelectListPages(data){
     return http.post('/api/Select/SelectListPages',data);

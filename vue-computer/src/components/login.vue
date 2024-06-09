@@ -22,7 +22,7 @@
 <script setup>
     import {reactive} from "vue"
     import { ElMessage } from 'element-plus'
-    import {DoLogin,SetToken} from "../public/request.js"
+    import {DoLogin,SetToken} from '@/http/index.js'
     import { useRouter} from 'vue-router'
 
     const router = useRouter();

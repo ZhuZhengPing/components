@@ -1,7 +1,7 @@
 
 import { createRouter,createWebHashHistory } from 'vue-router'
 //console.log("router");
-export default createRouter({
+const router =  createRouter({
     history: createWebHashHistory(),
     routes:[
         {
@@ -38,4 +38,15 @@ export default createRouter({
             meta:1
         }
     ]
-})
+});
+
+router.beforeEach((to,form,next)=>{
+    if(to.meta.index>form.meta.index){
+        to.meta.transition = "router-back";
+    }else{
+        to.meta.transition = "router-next";
+    }
+    next();
+});
+
+export default router;

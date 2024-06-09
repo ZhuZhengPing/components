@@ -35,13 +35,16 @@
                 </el-tabs>
             </div>
         </div>
+
+        
     </div>
 </template>
 <script setup>
     import {reactive,onMounted} from 'vue';
-    import {SelectList,GetUserName} from '../public/request.js'
+    import {SelectList,GetUserName} from '@/http/index.js'
     import {Setting,Menu} from '@element-plus/icons-vue'
     import { useRouter } from 'vue-router';
+    
 
     const router = useRouter();
     let menusAll=[];
@@ -67,8 +70,7 @@
         }
 
         menusAll = await SelectList({
-            TableName:"AkdMenu",
-            OrderBy:"OrderNum"
+            TableName:"AkdMenu"
         });
 
         form.menus=menusAll.filter(p=>p.ParentID==0).map(p=>{
@@ -98,19 +100,9 @@
         const index = form.openedTabs.findIndex(t => t.id === tab.id);
         form.openedTabs.splice(index, 1);
     }
-
-    function modifyPasswordEvent(){
-
-    }
-
-    function loginOutEvent(){
-
-    }
 </script>
 
 <style lang="scss" scoped>
-
-
     .container-index{
        display: flex;
        height: 100%;

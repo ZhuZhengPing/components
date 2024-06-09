@@ -27,10 +27,6 @@ namespace c__components.Repository
             {
                 sql = sql + $" order by {model.OrderBy} ";
             }
-            else
-            {
-                sql = sql + $" order by id desc ";
-            }
             return await _dapper.ExecuteList<dynamic>(sql);
         }
 

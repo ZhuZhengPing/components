@@ -9,5 +9,6 @@
     value:当前搜索的默认值
 4. 必须要建表备注，用来记录日志
 5. 不能建updateuserid等字段，直接删除数据
+6. tableButtonEvent 有3个参数，_data:当前记录的实体对象 _fields:当前表的字段类型，entity:表名
     
     

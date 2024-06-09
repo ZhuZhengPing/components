@@ -1,13 +1,13 @@
 <template>
     <div class="akd-header">
         <slot name="left">
-            <i class="fa fa-chevron-left" @click="goBack"></i>
+            <i class="fa fa-chevron-left akd-header-i" @click="goBack"></i>
         </slot>
         <p>
             <slot></slot>
         </p>
         <slot name="right">
-            <i></i>
+            <i class="akd-header-i"></i>
         </slot>  
     </div>
 </template>

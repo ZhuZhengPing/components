@@ -49,7 +49,7 @@ create table AkdTable
 	FiledText nvarchar(100) not null,
 	FiledType varchar(50) not null,   -- string£¬date£¬select,custom
 	
-	IsInSearch bit not null,
+	IsInSearch int not null,
 	SearchValue nvarchar(100),
 
 	IsInTable bit not null,
@@ -81,8 +81,8 @@ create table  AkdTableButton
 	ButtonType int not null,
 	ButtonText nvarchar(100) not null, 
 	ButtonVisibleStatus varchar(20) not null,
-	OrderNum int not null,
 	ButtonFunction nvarchar(1000) not null,
+	OrderNum int not null,
 	CreateTime datetime not null default(getdate()),
 	CreateUserName nvarchar(50) not null
 )

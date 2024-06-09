@@ -1,26 +1,14 @@
 <template>
   <Suspense>
-    <router-view v-slot="{ Component }" class="haha">
-      <transition name="fade">
-        <component :is="Component" />
+    <router-view v-slot="{Component,route}">
+      <transition :name="route.meta.transition">
+        <component :is="Component" :key="route.path"/>
       </transition>
-    </router-view>
+    </router-view> 
   </Suspense>
 </template>
 
 <script setup>
-  import {ref} from 'vue';
-  import {onBeforeRouteLeave} from 'vue-router';
-
-  let routerName = ref();
-
-  // onBeforeRouteLeave((to,from)=>{
-  //   if(to.meta.index<from.meta.index){
-  //     this.routerName = "router-back";
-  //   }else{
-  //     this.routerName = "router-next";
-  //   }
-  // })
 
 </script>
 
@@ -29,27 +17,24 @@
     width:100%;
     height: 100%;
   }
-  // .app-div{
-  //   width:100%;
-  //   height: 100%;
-  // }
-  // #back-view {
-  //   position: absolute;
-  //   z-index: 9999;
-  //   height: 42%;
-  //   background-color: rgba(222, 176, 107, 0.81);
-  //   color: white;
-  //   font-size: 24px;
-  //   display: flex;
-  //   flex-direction: column;
-  //   align-items: flex-end;
-  //   justify-content: center;
-  //   border-radius: 0 100% 100% 0;
-  //   width: 0;
-  //   left: 0;
-  //   top: 0;
-  //   i {
-  //     margin-right: 15px;
-  //   }
-  // }
+  .router-back-enter-active, .router-back-leave-active,
+  .router-next-enter-active, .router-next-leave-active {
+    position: absolute !important;
+    width: 100%;
+    left: 0;
+    top: 0;
+    transition: all .5s ease;
+  }
+  .router-back-enter-active .router-next-leave-active {
+    z-index: 2;
+  }
+  .router-next-enter-active, .router-back-leave-active {
+    z-index: 3;
+  }
+  .router-back-enter-from, .router-next-leave-to {
+    opacity: 0;
+  }
+  .router-back-leave-to, .router-next-enter-from {
+    transform: translateX(100%);
+  }
 </style>

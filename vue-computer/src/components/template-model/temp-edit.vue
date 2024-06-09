@@ -1,8 +1,6 @@
 <template>
     <el-dialog
-        v-model:visible="props.visible"
-        :title="title"
-        :width="width">
+        :title="title">
         <div class="content-form">
             <el-form label-position="right" :model="data" :label-width="80">
                 <el-form-item :label="item.FiledText" v-for="item in fields" :key="item.ID">
@@ -20,43 +18,36 @@
 
                     <el-input-number v-else-if="item.FiledType=='number'" v-model="data[item.FiledName]" :clearable="true" style="width:100%" :disabled="item.Disabled"></el-input-number>
                 </el-form-item>
-
-                <slot></slot>
             </el-form>
         </div>
         <template #footer>
             <div class="dialog-footer">
                 <el-button @click="visible=false">取消</el-button>
-                <el-button type="primary" plain @click="saveEvent" v-if="">保存</el-button>
+                <el-button type="primary" plain @click="saveEvent">保存</el-button>
             </div>
         </template>
     </el-dialog>
 </template>
 <script setup>
     import { reactive,ref, watch } from 'vue';
-    import { SelectList, DoDelete, Add, Update, GetUserName, GetTableRemark } from '@/public/request.js';
-    import {ElDialog,ElOption,ElButton,ElInput,ElSelect,ElDatePicker,ElInputNumber,ElForm,ElFormItem,ElMessage,ElMessageBox} from 'element-plus';
+    import { SelectList, DoDelete, Add, Update, GetUserName, GetTableRemark } from '@/http/index.js';
 
-    const props = defineProps({
-        entity:String,
-        action:String,    //  add , edit , select
-        fields:Array,
-        data: Object,
+    // const props = defineProps({
+    //     entity:String,
+    //     action:String,    //  add , edit , select
+    //     fields:Array,
+    //     data: Object
+    // });
 
-        visible: Boolean, 
-        title: String,
-        width: String,
-        onConfirm: Function ,
-        onCancel:Function
-    });
-    const emits = defineEmits(['edit-event', 'update:visible']);
+    let model = defineModel();
 
-    let fields=ref([...props.fields]);
-    let data = ref({ ...props.data });
-    let title = ref(props.title);
-    let visible = ref(props.visible);
+    const emits = defineEmits(['temp-edit-event']);
 
-    watch(() => props.data, (newValue, oldValue) => {
+    let fields=ref([...model.value.fields]);
+    let data = ref({ ...model.value.data });
+    let title = ref("");
+
+    watch(() => model.value.data, (newValue, oldValue) => {
         data.value = {
             ...newValue,
             CreateUserName: GetUserName()
@@ -68,28 +59,25 @@
         if (fields.value.length == 0) {
             fields = await SelectFormatFields({
                 TableName: "AkdTable",
-                Where: `TableName='${props.entity}' and IsInEdit=1`,
-                OrderBy: "OrderNum"
+                Where: `TableName='${model.value.entity}' and IsInEdit=1`
             });
             fields.map(p => {
-                p.Value = props.data[p.FiledName] === undefined ? "" : props.data[p.FiledName];
-                if (props.action == "select") {
+                p.Value = model.value.data[p.FiledName] === undefined ? "" : model.value.data[p.FiledName];
+                if (model.value.action == "select") {
                     p.Disabled = true;
                 }
             });
         }
 
-        if (!title) {
-            title.value = await GetTableRemark({
-                Name: props.entity
-            });
-            if (props.action == "add") {
-                title.value = "添加" + title.value;
-            } else if (props.action == "edit") {
-                title.value = "修改" + title.value;
-            } else if (props.action == "select") {
-                title.value = "查询" + title.value;
-            }
+        title.value = await GetTableRemark({
+            Name: model.value.entity
+        });
+        if (model.value.action == "add") {
+            title.value = "添加" + title.value;
+        } else if (model.value.action == "edit") {
+            title.value = "修改" + title.value;
+        } else if (model.value.action == "select") {
+            title.value = "查询" + title.value;
         }
     }
     
@@ -127,8 +115,7 @@
         }
         if(result>0){
             ElMessage("操作成功");
-            init();
-            emits("menu-edit-event",result);
+            emits("temp-edit-event",result);
         }else{
             ElMessage.error("操作失败，请检查网络");
         }

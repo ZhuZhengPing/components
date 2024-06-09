@@ -12,7 +12,7 @@
         /// <summary>
         /// 是否显示在搜索中
         /// </summary>
-        public bool IsInSearch { get; set; }
+        public int IsInSearch { get; set; }
         public string SearchValue { get; set; }
 
         /// <summary>

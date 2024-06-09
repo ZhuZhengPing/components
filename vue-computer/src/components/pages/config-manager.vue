@@ -39,7 +39,7 @@
 <script setup>
     import {ref,watch} from 'vue';
     import {ElForm,ElFormItem,ElInput,ElTable,ElTableColumn,ElButton} from 'element-plus'
-    import{SelectList,DoDelete,Update,GetUserName} from '@/public/request.js';
+    import{SelectList,DoDelete,Update,GetUserName} from '@/http/index.js';
     import{formatDateTime} from '@/public/index.js';
 
     let searchName = ref(null);
@@ -57,8 +57,7 @@
     function getConfigData(){
         SelectList({
             TableName:"AkdConfig",
-            Where:`ParentID=${parentId.value}`,
-            OrderBy:"OrderNum"
+            Where:`ParentID=${parentId.value}`
         }).then(res=>{
             if(parentId.value==0){
                 parentData.value=res;
