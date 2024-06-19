@@ -8,10 +8,12 @@
     import {reactive} from 'vue';
     import { ElFormItem,ElButton } from 'element-plus';
 
+    // where is bind model, used for the export button
+    const where = defineModel();
+
     const props = defineProps({
         entity:String,
-        buttons:Array,
-        where:Object
+        buttons:Array
     });
     let buttons = reactive(props.buttons);
 
@@ -19,6 +21,6 @@
 
     async function buttonFunctionEvent(button){
         let tempEvent = eval('('+button.ButtonFunction+')') ;
-        tempEvent(props.entity,props.where,emits);
+        tempEvent(props.entity,where.value,emits);
     }
 </script>

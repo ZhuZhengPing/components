@@ -43,7 +43,7 @@
 
         </template>
 
-        <temp-buttons :entity="entity" :buttons="buttons"  @button-event="searchEvent"></temp-buttons>
+        <temp-buttons :entity="entity" :buttons="buttons" v-model="data" @button-event="searchEvent"></temp-buttons>
     </el-form>
 </div>
 </template>

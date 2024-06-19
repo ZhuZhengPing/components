@@ -289,10 +289,50 @@
     }
 
     async function exportButtonEvent(){
-
+        await addButtonCommonEvent({
+            ButtonType:20,
+            TableName:entity.value,
+            ButtonText:"导出",
+            ButtonVisibleStatus:"[10,20,30,40,50,60,70,80,90,100]",
+            ButtonFunction:JSON.stringify(auditButtonTemplete)
+        });
     }
     async function exportButtonTemplete(_entity,_data,_emits){
+        let tempData = SelectList({
+            TableName:_entity,
+            Where:_data
+        });
 
+        var wb = XLSX.utils.book_new();
+        var ws = XLSX.utils.aoa_to_sheet(tempData);
+        var titleStyle = { font: { bold: true, color: { rgb: '000000' } } };
+        var range = XLSX.utils.decode_range(ws['!ref']);
+        for (var col = range.s.c; col <= range.e.c; col++) {
+            var cellAddress = { c: col, r: 0 }; 
+            var cellRef = XLSX.utils.encode_cell(cellAddress);
+            ws[cellRef].s = titleStyle;
+        }
+        var wscols = [];
+        for (var col = range.s.c; col <= range.e.c; col++) {
+            var maxLength = 0;
+            for (var row = range.s.r; row <= range.e.r; row++) {
+                var cellAddress = { c: col, r: row };
+                var cellRef = XLSX.utils.encode_cell(cellAddress);
+                if (ws[cellRef] && ws[cellRef].v) {
+                    var cellLength = String(ws[cellRef].v).length;
+                    maxLength = Math.max(maxLength, cellLength);
+                }
+            }
+            var colWidth = { wch: maxLength + 2 }; 
+            wscols.push(colWidth);
+        }
+        ws['!cols'] = wscols;
+
+        XLSX.utils.book_append_sheet(wb, ws,"Sheet1");
+        tempExcelName = await GetTableRemark({
+            Name: _entity
+        });
+        XLSX.writeFile(wb, (tempExcelName||"")+"列表.xlsx" );
     }
 
     function addButtonCommonEvent(tempButtonRow){
