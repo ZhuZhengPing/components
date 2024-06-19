@@ -32,27 +32,14 @@
     import { reactive,ref, watch } from 'vue';
     import { SelectList, DoDelete, Add, Update, GetUserName, GetTableRemark } from '@/http/index.js';
 
-    // const props = defineProps({
-    //     entity:String,
-    //     action:String,    //  add , edit , select
-    //     fields:Array,
-    //     data: Object
-    // });
-
     let model = defineModel();
-
-    const emits = defineEmits(['temp-edit-event']);
+    model.value.CreateUserName = GetUserName();
+    
+    //const emits = defineEmits(['temp-edit-event']);
 
     let fields=ref([...model.value.fields]);
     let data = ref({ ...model.value.data });
     let title = ref("");
-
-    watch(() => model.value.data, (newValue, oldValue) => {
-        data.value = {
-            ...newValue,
-            CreateUserName: GetUserName()
-        };
-    });
 
     init();
     async function init(){
@@ -108,11 +95,13 @@
             return;
         }
         let result=0;
-        if(data.ID){
-            result = await Update(data);
-        }else{
+
+        if(model.value.action=="add"){
             result = await Add(data);
+        }else{
+            result = await Update(data);
         }
+
         if(result>0){
             ElMessage("操作成功");
             emits("temp-edit-event",result);

@@ -163,7 +163,7 @@
 
 <script setup>
     import {reactive,ref,onMounted } from 'vue';
-    import {GetTableDetailBySql,SelectList,UpdateList,GetTableList,Add} from '@/http/index.js';
+    import {GetTableDetailBySql,SelectList,UpdateList,GetTableList,Add,DoDelete} from '@/http/index.js';
     import tempTable from '@/components/template-model/temp-table.vue';
     import {formatDateTime} from '@/public/index.js';
     import tempEdit from '@/components/template-model/temp-edit.vue';
@@ -200,13 +200,6 @@
         });
     }
 
-    // function addEvent(){
-    //     const maxValue = data.value.reduce((max, obj) => Math.max(max, obj.OrderNum), Number.NEGATIVE_INFINITY);
-    //     data.value.push({
-    //         OrderNum:maxValue
-    //     });
-    // }
-    
     async function saveEvent(){
         let d = await UpdateList(data.value);
         if(d>0){
@@ -217,37 +210,94 @@
     }
 
     function addButtonEvent(){
-        const maxValue = fields.value.reduce((max, obj) => Math.max(max, obj.OrderNum), Number.NEGATIVE_INFINITY);
-        let tempButtonRow = {
-            ButtonType:10,
+        await addButtonCommonEvent({
+            ButtonType:20,
             TableName:entity.value,
             ButtonText:"添加",
             ButtonVisibleStatus:"[10,20,30,40,50,60,70,80,90,100]",
-            ButtonFunction:JSON.stringify(addButtonTemplete),
-            OrderNum:minValue+10
-        };
-        let d = await Add(tempButtonRow);
-        if(d>0){
-            ElMessage.success('操作成功');
-            await initButtons();
-        }else{
-            ElMessage.error('操作失败，请重试');
-        }
+            ButtonFunction:JSON.stringify(addButtonTemplete)
+        });
     }
-    function addButtonTemplete(_entit,_data,_e){
-
+    function addButtonTemplete(_entity,_data,_emits){
+        tempEditModel.value.entity=_entity;
+        tempEditModel.value.action="add";
+        tempEditModel.value.data=_data;
+        tempEditModel.value.emits=_emits;
+        tempEditModel.value.show=true;
     }
 
     async function editButtonEvent(){
-        const maxValue = fields.value.reduce((max, obj) => Math.max(max, obj.OrderNum), Number.NEGATIVE_INFINITY);
-        let tempButtonRow = {
+        await addButtonCommonEvent({
             ButtonType:10,
             TableName:entity.value,
             ButtonText:"编辑",
             ButtonVisibleStatus:"[10,20,30]",
-            ButtonFunction:JSON.stringify(editButtonTemplete),
-            OrderNum:minValue+10
-        };
+            ButtonFunction:JSON.stringify(editButtonTemplete)
+        });
+    }
+    function editButtonTemplete(_entity,_data,_emits,_fields){
+        tempEditModel.value.entity=_entity;
+        tempEditModel.value.action="edit";
+        tempEditModel.value.data=_data;
+        tempEditModel.value.emits=_emits;
+        tempEditModel.value.fields=_fields;
+        tempEditModel.value.show=true;
+    }
+
+    async function deleteButtonEvent(){
+        await addButtonCommonEvent({
+            ButtonType:10,
+            TableName:entity.value,
+            ButtonText:"删除",
+            ButtonVisibleStatus:"[10,20,30]",
+            ButtonFunction:JSON.stringify(deleteButtonTemplete)
+        });
+    }
+    async function deleteButtonTemplete(_entity,_data,_emits,_fields){
+        ElMessageBox.confirm("确定要删除吗？","提示").then(()=>{
+            let d = DoDelete({
+                ID:_data.ID,
+                TableName:_entity
+            });
+            if(d>0){
+                ElMessage.success('操作成功');
+            }else{
+                ElMessage.error('操作失败，请重试');
+            }
+        });
+    }
+
+    async function auditButtonEvent(){
+        await addButtonCommonEvent({
+            ButtonType:10,
+            TableName:entity.value,
+            ButtonText:"审核",
+            ButtonVisibleStatus:"[10,20,30,40]",
+            ButtonFunction:JSON.stringify(auditButtonTemplete)
+        });
+    }
+    async function auditButtonTemplete(_entity,_data,_emits,_fields){
+        ElMessageBox.confirm("确定要审核吗？","提示").then(()=>{
+            _data.Status=100;
+            let d = Update(_data);
+            if(d>0){
+                ElMessage.success('操作成功');
+            }else{
+                ElMessage.error('操作失败，请重试');
+            }
+        });
+    }
+
+    async function exportButtonEvent(){
+
+    }
+    async function exportButtonTemplete(_entity,_data,_emits){
+
+    }
+
+    function addButtonCommonEvent(tempButtonRow){
+        const maxValue = fields.value.reduce((max, obj) => Math.max(max, obj.OrderNum), Number.NEGATIVE_INFINITY);
+        tempButtonRow.OrderNum = maxValue+10;
         let d = await Add(tempButtonRow);
         if(d>0){
             ElMessage.success('操作成功');
@@ -255,13 +305,6 @@
         }else{
             ElMessage.error('操作失败，请重试');
         }
-    }
-    function editButtonTemplete(_data,_fields,_entity){
-        tempEditModel.value.entity=_entity;
-        tempEditModel.value.action="edit";
-        tempEditModel.value.fields=_fields;
-        tempEditModel.value.data=_data;
-        tempEditModel.value.show=true;
     }
 
     function buttonTypeEvent(row){

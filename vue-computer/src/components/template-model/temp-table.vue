@@ -13,7 +13,7 @@
                     <el-table-column label="操作" width="90" align="center" v-if="btn in buttons" :key="'btn'+btn.ID">
                         <template #default="scope">
                             <el-button v-if="!btn.ButtonVisibleStatus || btn.ButtonVisibleStatus.includes(scope.row.Status)" type="primary" plain 
-                            @click="tableButtonEvent(scope.row,form.fields)" style="width:60px;">{{btn.ButtonText}}</el-button>
+                            @click="tableButtonEvent(scope.row,form.fields)" @button-event="getData" style="width:60px;">{{btn.ButtonText}}</el-button>
                         </template>
                     </el-table-column>
                 </template>
@@ -139,7 +139,7 @@
 
     // _fields：按钮的类型，values:当前实体对象
     function tableButtonEvent(_data,_fields){
-        return _fields.ButtonFunction(_data,_fields,props.entity);
+        return _fields.ButtonFunction(props.entity,_data,getData,_fields);
     }
 
     function pageEvent(val){

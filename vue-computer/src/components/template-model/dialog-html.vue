@@ -13,7 +13,6 @@
 
 <script setup>
     import { ref, watch } from 'vue';
-    import RuntimeTemplate from 'vue3-runtime-template';
     import { ElDialog,ElButton } from 'element-plus';
 
     const props = defineProps({
