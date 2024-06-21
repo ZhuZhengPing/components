@@ -34,6 +34,7 @@
                                 <el-option key="5" label="month" value="month" />
                                 <el-option key="6" label="year" value="year" />
                                 <el-option key="7" label="number" value="number" />
+                                <el-option key="8" label="textarea" value="textarea" />
                             </el-select>
                         </template>
                     </el-table-column>  
@@ -153,12 +154,12 @@
 
     <temp-edit 
             v-if="tempEditModel.show"
-            :entity="tempEditModel.entity"
-            :action="tempEditModel.action"
-            :fields="tempEditModel.fields"
-            :data="tempEditModel.data"
-            @temp-edit-event="tempEditEvent"
+            entity="AkdTableButton"
+            action="add"
+            :data="{TableName:'AkdTableButton'}"
+            @temp-edit-event="tempEditCallbackEvent"
             ></temp-edit>
+
 </template>
 
 <script setup>
@@ -175,11 +176,11 @@
 
     // 注入编辑模态窗口供子组件调用
     let tempEditModel = ref({
-        show:false,
         entity:"",
         action:"",
+        data:{},
         fields:[],
-        data:{}
+        show:false
     });
     
     onMounted(async () => { 
@@ -209,7 +210,7 @@
         }
     }
 
-    function addButtonEvent(){
+    async function addButtonEvent(){
         await addButtonCommonEvent({
             ButtonType:20,
             TableName:entity.value,
@@ -335,7 +336,7 @@
         XLSX.writeFile(wb, (tempExcelName||"")+"列表.xlsx" );
     }
 
-    function addButtonCommonEvent(tempButtonRow){
+    async function addButtonCommonEvent(tempButtonRow){
         const maxValue = fields.value.reduce((max, obj) => Math.max(max, obj.OrderNum), Number.NEGATIVE_INFINITY);
         tempButtonRow.OrderNum = maxValue+10;
         let d = await Add(tempButtonRow);
@@ -345,6 +346,14 @@
         }else{
             ElMessage.error('操作失败，请重试');
         }
+    }
+
+    function customButtonEvent(){
+        tempEditModel.show=true;
+    }
+    async function tempEditCallbackEvent(d){
+        tempEditModel.show=false;
+        await initButtons();
     }
 
     function buttonTypeEvent(row){

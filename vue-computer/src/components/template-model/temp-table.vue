@@ -4,16 +4,16 @@
             <el-table-column type="index" label="序号" width="40"></el-table-column>
 
             <template  v-for="item in form.fields" :key="'tab'+item.ID">
-                <el-table-column v-if="item.FiledType=='select'" :prop="item.FiledName" :label="item.FiledText" :width="item.Width" :formatter="tableFunctionEvent" />
-                <el-table-column v-else-if="item.FiledType=='string'" :prop="item.FiledName" :label="item.FiledText" :width="item.Width"/>
-                <el-table-column v-else-if="['data','datetime','month','year'].includes(item.FiledType)" :prop="item.FiledName" :label="item.FiledText" :width="item.Width" :formatter="tableDateEvent"/>
-                <el-table-column v-else-if="item.FiledType=='number'" :prop="item.FiledName" :label="item.FiledText" :width="item.Width"/>
+                <el-table-column v-if="item.FiledType=='select'" :prop="item.FiledName" :label="item.FiledText" :width="item.Width||'auto'" :formatter="tableFunctionEvent" />
+                <el-table-column v-else-if="['string','textarea'].includes(item.FiledType)" :prop="item.FiledName" :label="item.FiledText" :width="item.Width||'auto'"/>
+                <el-table-column v-else-if="['data','datetime','month','year'].includes(item.FiledType)" :prop="item.FiledName" :label="item.FiledText" :width="item.Width||'auto'" :formatter="tableDateEvent"/>
+                <el-table-column v-else-if="item.FiledType=='number'" :prop="item.FiledName" :label="item.FiledText" :width="item.Width||'auto'"/>
 
                 <template v-if="buttons.length">
                     <el-table-column label="操作" width="90" align="center" v-if="btn in buttons" :key="'btn'+btn.ID">
                         <template #default="scope">
                             <el-button v-if="!btn.ButtonVisibleStatus || btn.ButtonVisibleStatus.includes(scope.row.Status)" type="primary" plain 
-                            @click="tableButtonEvent(scope.row,form.fields)" @button-event="getData" style="width:60px;">{{btn.ButtonText}}</el-button>
+                            @click="tableButtonEvent(scope.row,form.fields)" @button-event="getData" style="min-width:60px;">{{btn.ButtonText}}</el-button>
                         </template>
                     </el-table-column>
                 </template>
@@ -36,11 +36,12 @@
         entity:String,
         fields:Array,
         buttons:Array,
-        where:Object,
+        // where:Object,
         action:String,    //  add , edit , select
         pageSize:Number
     });
     const emits = defineEmits(['table-event']);
+    let where = defineModel();
 
     let loading = ref(false);
     let fields=reactive([...props.fields]);
@@ -49,9 +50,9 @@
     let total = ref(0);
     let pageIndex=0;
 
-    watch(() => props.where, (newValue, oldValue) => {
+    watch(() => where.value, (newValue, oldValue) => {
         where.value = [
-            ...where,
+            ...where.value,
             ...newValue
         ];
         getData();
@@ -90,7 +91,7 @@
         loading.value=true;
         if(props.pageSize){
            var result = await SelectListPages({
-                ...props.where,
+                ...where.value,
                 TableName:props.entity,
                 PageIndex:pageIndex,
                 PageSize:props.pageSize
@@ -99,18 +100,18 @@
             total=result.total;
         }else{
             list=await SelectList({
-                ...props.where,
+                ...where.value,
                 TableName:props.entity,
             });
 
-            // 如果存在ParentID,也就是主从结构，则列表可以做成主从结构的模式
-            if(fields.some(p=>p.FiledName=='ParentID')){
-                let tempList = list.filter(p=>p.ParentID==0);
-                tempList.map(p=>{
-                    p.children = list.filter(k=>k.ParentID==p.ID);
-                });
-                list=tempList;
-            }
+            // // 如果存在ParentID,也就是主从结构，则列表可以做成主从结构的模式
+            // if(fields.some(p=>p.FiledName=='ParentID')){
+            //     let tempList = list.filter(p=>p.ParentID==0);
+            //     tempList.map(p=>{
+            //         p.children = list.filter(k=>k.ParentID==p.ID);
+            //     });
+            //     list=tempList;
+            // }
         }
         loading.value=false;
     }

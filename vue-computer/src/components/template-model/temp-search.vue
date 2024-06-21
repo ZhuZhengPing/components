@@ -2,16 +2,20 @@
 <div class="content-form">
     <el-form label-position="right" :inline="true" :model="data" :label-width="80">
         <el-form-item :label="item.FiledText" v-if="item in fields.filter(p=>p.IsInSearch==10)" :key="'search'+item.ID">
-            <el-select v-model="data[item.FiledName]" placeholder="" clearable style="width:100%;" @change="searchEvent">
+            <el-select v-if="item.FiledType=='select'" v-model="data[item.FiledName]" placeholder="" clearable style="width:100%;" @change="searchEvent">
                 <el-option v-for="d in searchFunctionEvent(item,data[item.FiledName])" 
                     :key="'option'+d.value"
                     :label="d.text"
                     :value="d.value"
                 />
             </el-select>
-            <el-input v-model="data[item.FiledName]" clearable style="width:100%;" @input="searchEvent"/>
-            <el-date-picker v-model="data[item.FiledName]" :type="item.FiledType" placeholder="" @change="searchEvent" clearable style="width:100%;"/>
-            <el-input-number v-model="data[item.FiledName]" style="width:100%;" @input="searchEvent"/>
+            <el-input v-else-if="['string','textarea'].includes(item.FiledType)" v-model="data[item.FiledName]" clearable style="width:100%;" @input="searchByDebounceEvent"/>
+            <template v-else-if="['date','datetime','month','year'].includes(item.FiledType)">
+                <el-date-picker v-model="data[item.FiledName+'Begin']" :type="item.FiledType" placeholder="" @change="searchEvent" clearable style="width:100%;"/>
+                <el-date-picker v-model="data[item.FiledName+'End']" :type="item.FiledType" placeholder="" @change="searchEvent" clearable style="width:100%;"/>
+            </template>
+            
+            <el-input-number v-else-if="item.FiledType=='number'" v-model="data[item.FiledName]" style="width:100%;" @input="searchEvent"/>
         </el-form-item>
 
         <el-form-item>
@@ -20,17 +24,21 @@
         
 
         <template  v-if="fields.some(p=>p.IsInSearch==20)">
-            <el-form-item v-if="advanceSearch" :label="item.FiledText" v-if="item in fields.filter(p=>p.IsInSearch==20)" :key="'search'+item.ID">
-                <el-select v-model="data[item.FiledName]" placeholder="" clearable style="width:100%;" @change="searchEvent">
+            <el-form-item :label="item.FiledText" v-if="item in fields.filter(p=>p.IsInSearch==10)" :key="'search'+item.ID">
+                <el-select v-if="item.FiledType=='select'" v-model="data[item.FiledName]" placeholder="" clearable style="width:100%;" @change="searchEvent">
                     <el-option v-for="d in searchFunctionEvent(item,data[item.FiledName])" 
                         :key="'option'+d.value"
                         :label="d.text"
                         :value="d.value"
                     />
                 </el-select>
-                <el-input v-model="data[item.FiledName]" clearable style="width:100%;" @input="searchEvent"/>
-                <el-date-picker v-model="data[item.FiledName]" :type="item.FiledType" placeholder="" @change="searchEvent" clearable style="width:100%;"/>
-                <el-input-number v-model="data[item.FiledName]" style="width:100%;" @input="searchEvent"/>
+                <el-input v-else-if="['string','textarea'].includes(item.FiledType)" v-model="data[item.FiledName]" clearable style="width:100%;" @input="searchByDebounceEvent"/>
+                <template v-else-if="['date','datetime','month','year'].includes(item.FiledType)">
+                    <el-date-picker v-model="data[item.FiledName+'Begin']" :type="item.FiledType" placeholder="" @change="searchEvent" clearable style="width:100%;"/>
+                    <el-date-picker v-model="data[item.FiledName+'End']" :type="item.FiledType" placeholder="" @change="searchEvent" clearable style="width:100%;"/>
+                </template>
+                
+                <el-input-number v-else-if="item.FiledType=='number'" v-model="data[item.FiledName]" style="width:100%;" @input="searchEvent"/>
             </el-form-item>
 
             <el-form-item v-if="!advanceSearch">
@@ -59,9 +67,10 @@
         data:Object
     });
     
+    let data=defineModel();
+
     let loading = ref(false);
     let fields=ref([...props.fields]);
-    let data=ref({...props.data});
     let buttons = ref([...props.buttons]);
     let advanceSearch=ref(false);
     const emits = defineEmits(['search-event']);
@@ -76,6 +85,21 @@
                 Where:`TableName='${props.entity}' and IsInSearch>0`
             });
         }
+
+        fields.value.map(p=>{
+            if(['date','datetime','month','year'].includes(p.FiledType)){
+                if(!data.value[p.FiledName+'Begin']){
+                    data.value[p.FiledName+'Begin'] = p.SearchValue||"";
+                }
+                if(!data.value[p.FiledName+'End']){
+                    data.value[p.FiledName+'End'] = p.SearchValue||"";
+                }
+            }else{
+                if(!data.value[p.FiledName]){
+                    data.value[p.FiledName] = p.SearchValue||"";
+                }
+            }
+        });
 
         if (buttons.length == 0) {
             buttons = await SelectFormatFields({

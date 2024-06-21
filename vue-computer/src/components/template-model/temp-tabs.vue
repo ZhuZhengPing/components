@@ -1,8 +1,8 @@
 <template>
     <el-tabs v-loading="loading" type="border-card" style="height: 100%; display:flex; flex-direction:column;" v-model="tabName">
         <el-tab-pane :label="entity.name" name="0" v-for="item in entitys" :key="'tab'+item.entity">
-            <el-form style="flex:none;" :inline="true" v-if="buttons.filter(p=>p.TableName==item.entity && p.ButtonType==20 && p.ButtonVisibleStatus.includes(props.parentData.Status)).length">
-                <temp-buttons :entity="item.entity" :buttons="buttons.filter(p=>p.TableName==item.entity && p.ButtonType==20 && p.ButtonVisibleStatus.includes(props.parentData.Status))" :where="where" @button-event="buttonEvent(item.entity)"></temp-buttons>
+            <el-form style="flex:none;" :inline="true" v-if="buttons.filter(p=>p.TableName==item.entity && p.ButtonType==20).length">
+                <temp-buttons :entity="item.entity" :buttons="buttons.filter(p=>p.TableName==item.entity && p.ButtonType==20)" v-model="where" @button-event="buttonEvent(item.entity)"></temp-buttons>
             </el-form>
 
             <temp-table  style="flex:auto;display: flex;flex-direction: column;;height:100%;"
@@ -10,7 +10,7 @@
                    :entity="item.entity" 
                    :fields="fields.filter(p=>p.IsInTable && p.TableName==item.entity)" 
                    :buttons="buttons.filter(p=>p.ButtonType==10 && p.TableName==item.entity)"
-                   :where="where"></temp-table>
+                   v-model="where"></temp-table>
             </el-tab-pane>
         </el-tabs>
 </template>
@@ -21,13 +21,13 @@
     import tempButtons from '@/components/template-model/temp-buttons.vue';
 
     const props = defineProps({
-        parentData:Object,
         parentEntity:String,
         entitys:Array
     });
 
-    watch(()=>props.parentData.ID,(newValue,oldValue)=>{
-        where[props.parentEntity+"ID"]=newValue;
+    let parentData = defineModel();
+    watch(()=>parentData.value.ID,(newValue,oldValue)=>{
+        where.value[props.parentEntity+"ID"]=newValue;
     },{deep:true});
 
     let loading = ref(false);
@@ -35,7 +35,7 @@
     let fields=reactive([]);
     let buttons=reactive([]);
     let entitys = reactive([]);
-    let where = reactive({});
+    let where = ref({});
     
     let entityRef={};
 

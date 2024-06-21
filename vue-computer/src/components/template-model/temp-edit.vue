@@ -12,10 +12,11 @@
                                    :value="d.value" />
                     </el-select>
 
-                    <el-input v-else-if="item.FiledType=='string'" v-model.trim="data[item.FiledName]" :clearable="true" :disabled="item.Disabled" />
+                    <el-input v-else-if="item.FiledType=='string'" type="text" v-model.trim="data[item.FiledName]" :clearable="true" :disabled="item.Disabled" />
+                    <el-input v-else-if="item.FiledType=='textarea'" type="textarea" v-model.trim="data[item.FiledName]" :clearable="true" :rows="4" :disabled="item.Disabled" />
 
+                    <el-input v-else-if="['string','textarea'].includes(item.FiledType)" :type="item.FiledType=='string'?'text':item.FiledType" v-model.trim="data[item.FiledName]" :clearable="true" :disabled="item.Disabled" />
                     <el-date-picker v-else-if="['data','datetime','month','year'].includes(item.FiledType)" v-model="data[item.FiledName]" :type="item.FiledType" :clearable="true" :disabled="item.Disabled"></el-date-picker>
-
                     <el-input-number v-else-if="item.FiledType=='number'" v-model="data[item.FiledName]" :clearable="true" style="width:100%" :disabled="item.Disabled"></el-input-number>
                 </el-form-item>
             </el-form>

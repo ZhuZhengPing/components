@@ -3,14 +3,17 @@
         <div class="top" v-if="form.search.length>0">
             <temp-search :entity="entity" 
                     :fields="fields.filter(p=>p.IsInSearch>0)" 
-                    :buttons="buttons.filter(p=>p.ButtonType==20)" @search-event="searchEvent"></temp-search>
+                    :buttons="buttons.filter(p=>p.ButtonType==20)" 
+                    v-model="where"
+                    @search-event="searchEvent"></temp-search>
         </div>
 
         <div class="middle">
             <temp-table :entity="entity" 
                    :fields="fields.filter(p=>p.IsInTable)" 
                    :buttons="buttons.filter(p=>p.ButtonType==10)"
-                   :where="where"></temp-table>
+                   v-model="where"
+                   @table-event="tableEvent"></temp-table>
         </div>
     </div>
 </template>
@@ -25,7 +28,7 @@
     let pageSize = ref(getQueryString("pageSize"));
     let fields = reactive([]);
     let buttons = reactive([]);
-    let where = reactive({});
+    let where = ref({});
 
     init();
 
@@ -42,51 +45,12 @@
     }
 
     function searchEvent(data) {
-        where = data;
+        // where = data;
     }
 
-    // function exportEvent(){ 
-    //     form.loading = true;
-    //     selectList(searchModel).then(data=>{
-    //         // 创建工作簿和工作表
-    //         var wb = XLSX.utils.book_new();
-    //         var ws = XLSX.utils.aoa_to_sheet(data);
-
-    //         // 设置标题样式
-    //         var titleStyle = { font: { bold: true, color: { rgb: '000000' } } };
-    //         var range = XLSX.utils.decode_range(ws['!ref']);
-    //         for (var col = range.s.c; col <= range.e.c; col++) {
-    //             var cellAddress = { c: col, r: 0 }; // 标题通常在第一行
-    //             var cellRef = XLSX.utils.encode_cell(cellAddress);
-    //             ws[cellRef].s = titleStyle;
-    //         }
-
-    //         // 设置列宽自适应内容
-    //         var wscols = [];
-    //         for (var col = range.s.c; col <= range.e.c; col++) {
-    //             var maxLength = 0;
-    //             for (var row = range.s.r; row <= range.e.r; row++) {
-    //                 var cellAddress = { c: col, r: row };
-    //                 var cellRef = XLSX.utils.encode_cell(cellAddress);
-    //                 if (ws[cellRef] && ws[cellRef].v) {
-    //                     var cellLength = String(ws[cellRef].v).length;
-    //                     maxLength = Math.max(maxLength, cellLength);
-    //                 }
-    //             }
-    //             var colWidth = { wch: maxLength + 2 }; // 加 2 以留出一些空间
-    //             wscols.push(colWidth);
-    //         }
-    //         ws['!cols'] = wscols;
-
-    //         // 添加工作表到工作簿
-    //         XLSX.utils.book_append_sheet(wb, ws, props.props||"Sheet1");
-
-    //         // 保存文件
-    //         XLSX.writeFile(wb, props.name+"列表.xlsx" );
-    //     }).finally(()=>{
-    //         form.loading = false;
-    //     });
-    // }
+    function tableEvent(row){
+        
+    }
 </script>
 <style scoped lang="scss">
 

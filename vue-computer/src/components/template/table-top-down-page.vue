@@ -3,19 +3,21 @@
         <div class="top">
             <temp-search :entity="entity" 
                     :fields="fields.filter(p=>p.IsInSearch && p.TableName==entity)" 
-                    :buttons="buttons.filter(p=>p.ButtonType==20 && p.TableName==entity)" @search-event="searchEvent"></temp-search>
+                    :buttons="buttons.filter(p=>p.ButtonType==20 && p.TableName==entity)" 
+                    v-model="where"
+                    @search-event="searchEvent"></temp-search>
         </div>
 
         <div class="middle">
             <temp-table :entity="entity" 
-                   :fields="fields.filter(p=>p.IsInTable && p.TableName==entity)" 
-                   :buttons="buttons.filter(p=>p.ButtonType==10 && p.TableName==entity)"
-                   :where="where"
+                   :fields="fields.filter(p=>p.IsInTable)" 
+                   :buttons="buttons.filter(p=>p.ButtonType==10)"
+                   v-model="where"
                    @table-event="tableEvent"></temp-table>
         </div>
 
         <div class="bottom">
-            <temp-tabs :parentData="parentData"
+            <temp-tabs v-model="parentData"
                   :parentEntity="entity"
                   :entitys="entitys"></temp-tabs>
         </div>
@@ -33,15 +35,15 @@
     let pageSize = ref(getQueryString("pageSize"));
     let fields = reactive([]);
     let buttons = reactive([]);
-    let where = reactive({});
+    let where = ref({});
     let entitys = reactive(getQueryString("tabEntity").split(","));
-    let parentData = reactive({});
+    let parentData = ref({});
 
     init();
 
     async function init(){
         fields = await SelectList({
-            TableName:props.entity
+            TableName:entity.value
         });
 
         buttons = await SelectList({
@@ -51,7 +53,7 @@
     }
 
     function tableEvent(row){
-        parentData=row;
+        parentData.value=row;
     }
 </script>
 <style scoped lang="scss">
