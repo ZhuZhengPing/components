@@ -127,7 +127,7 @@
 
             <div class="bottom">
                 <el-table v-loading="loading" :data="buttons" style="width: 100%;height:100%;flex:auto;" highlight-current-row empty-text="暂无数据">
-                    <el-table-column type="index" label="序号" width="40"></el-table-column>
+                    <el-table-column type="index" label="序号" width="60"></el-table-column>
 
                     <el-table-column label="删除" width="90" align="center">
                         <template #default="scope">
@@ -137,8 +137,8 @@
 
                     <el-table-column type="index" label="位置" prop="ButtonType" width="80" :formatter="buttonTypeEvent"></el-table-column>
                     <el-table-column type="index" label="名称" prop="ButtonText" width="100"></el-table-column>
-                    <el-table-column type="index" label="可见状态([10,20])" prop="ButtonVisibleStatus" width="120"></el-table-column>
-                    <el-table-column type="index" label="按钮事件" prop="ButtonFunction" width="250"></el-table-column>
+                    <el-table-column type="index" label="可见状态([10,20])" prop="ButtonVisibleStatus" width="150"></el-table-column>
+                    <el-table-column type="index" label="按钮事件" prop="ButtonFunction" min-width="250"></el-table-column>
                     <el-table-column type="index" label="创建人" prop="CreateUserName" width="80"></el-table-column>
                     <el-table-column type="index" label="创建时间" prop="CreateTime" width="110" :formatter="formatDateTime"></el-table-column>
 
@@ -163,7 +163,7 @@
 </template>
 
 <script setup>
-    import {reactive,ref,onMounted } from 'vue';
+    import {reactive,ref,onMounted,ElMessage } from 'vue';
     import {GetTableDetailBySql,SelectList,UpdateList,GetTableList,Add,DoDelete} from '@/http/index.js';
     import tempTable from '@/components/template-model/temp-table.vue';
     import {formatDateTime} from '@/public/index.js';
@@ -196,7 +196,7 @@
     async function initButtons(){
         buttons.value = await SelectList({
             TableName:"AkdTableButton",
-            Where:`TableName=${entity.value}`,
+            Where:`TableName='${entity.value}'`,
             OrderNum:"OrderNum"
         });
     }
@@ -339,7 +339,7 @@
     async function addButtonCommonEvent(tempButtonRow){
         const maxValue = fields.value.reduce((max, obj) => Math.max(max, obj.OrderNum), Number.NEGATIVE_INFINITY);
         tempButtonRow.OrderNum = maxValue+10;
-        let d = await Add(tempButtonRow);
+        let d = await Add(tempButtonRow,entity.value);
         if(d>0){
             ElMessage.success('操作成功');
             await initButtons();
@@ -381,5 +381,8 @@
     .tables{
         flex: auto;
         overflow: auto;
+    }
+    .el-form-item{
+        margin-bottom: 0;
     }
 </style>

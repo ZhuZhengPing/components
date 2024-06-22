@@ -71,16 +71,25 @@ export function GetTableRemark(data){
     return http.post('/api/Table/GetTableRemark',data);
 }
 
-export function Add(data){
-    data.createUserName = GetUserName();
-    return http.post('/api/Add/Add',data);
+export function Add(data,entity){
+    data.CreateUserName = GetUserName();
+    let tempData = {
+        Values:data,
+        TableName:entity
+    };
+    return http.post('/api/Add/Add',tempData);
 }
 
-export function AddList(data){
+export function AddList(data,entity){
+    let tempData=[];
     for(var i=0;i<data.length;i++){
-        data[i].createUserName=GetUserName();
+        data[i].CreateUserName=GetUserName();
+        tempData.push({
+            Values:data[i],
+            TableName:entity
+        })
     }
-    return http.post('/api/Add/AddList',data);
+    return http.post('/api/Add/AddList',tempData);
 }
 
 export function Update(data){

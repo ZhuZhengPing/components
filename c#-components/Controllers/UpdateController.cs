@@ -32,6 +32,7 @@ namespace c__components.Controllers
             {
                 using (conn = _dapper.OpenConnection())
                 {
+                    await conn.OpenAsync();
                     tran = conn.BeginTransaction();
                     result = await _update.Update(model,tran,conn);
                     tran.Commit();
@@ -74,6 +75,7 @@ namespace c__components.Controllers
             {
                 using (conn = _dapper.OpenConnection())
                 {
+                    await conn.OpenAsync();
                     tran = conn.BeginTransaction();
                     foreach (var item in model)
                     {
