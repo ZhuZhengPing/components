@@ -5,3 +5,5 @@ Debug/
 bin/
 
 obj/
+
+vite.config.js

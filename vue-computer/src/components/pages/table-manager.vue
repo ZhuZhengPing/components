@@ -126,25 +126,25 @@
             </div>
 
             <div class="bottom">
-                <el-table v-loading="loading" :data="buttons" style="width: 100%;height:100%;flex:auto;" highlight-current-row empty-text="暂无数据">
+                <el-table :data="buttons" style="width: 100%;height:100%;flex:auto;" highlight-current-row empty-text="暂无数据">
                     <el-table-column type="index" label="序号" width="60"></el-table-column>
 
                     <el-table-column label="删除" width="90" align="center">
                         <template #default="scope">
-                            <el-button type="primary" plain @click="editButtonEvent(scope.row)" style="width:60px;">修 改</el-button>
+                            <el-button type="primary" plain @click="editButtonInTableEvent(scope.row)" style="width:60px;">修 改</el-button>
                         </template>
                     </el-table-column>
 
-                    <el-table-column type="index" label="位置" prop="ButtonType" width="80" :formatter="buttonTypeEvent"></el-table-column>
-                    <el-table-column type="index" label="名称" prop="ButtonText" width="100"></el-table-column>
-                    <el-table-column type="index" label="可见状态([10,20])" prop="ButtonVisibleStatus" width="150"></el-table-column>
-                    <el-table-column type="index" label="按钮事件" prop="ButtonFunction" min-width="250"></el-table-column>
-                    <el-table-column type="index" label="创建人" prop="CreateUserName" width="80"></el-table-column>
-                    <el-table-column type="index" label="创建时间" prop="CreateTime" width="110" :formatter="formatDateTime"></el-table-column>
+                    <el-table-column label="位置" prop="ButtonType" width="100" :formatter="buttonTypeEvent"></el-table-column>
+                    <el-table-column label="名称" prop="ButtonText" width="100"></el-table-column>
+                    <el-table-column label="可见状态([10,20])" prop="ButtonVisibleStatus" width="150"></el-table-column>
+                    <el-table-column label="事件" prop="ButtonFunction" min-width="250" style="white-space:pre;"></el-table-column>
+                    <el-table-column label="创建人" prop="CreateUserName" width="100"></el-table-column>
+                    <el-table-column label="创建时间" prop="CreateTime" width="140" :formatter="formatDateTimeEvent"></el-table-column>
 
                     <el-table-column label="删除" width="90" align="center">
                         <template #default="scope">
-                            <el-button type="danger" plain @click="deleteButtonEvent(scope.row)" style="width:60px;">删 除</el-button>
+                            <el-button type="danger" plain @click="deleteButtonnTableEvent(scope.row)" style="width:60px;">删 除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -154,19 +154,18 @@
 
     <temp-edit 
             v-if="tempEditModel.show"
-            entity="AkdTableButton"
-            action="add"
-            :data="{TableName:'AkdTableButton'}"
+            v-model="tempEditModel"
             @temp-edit-event="tempEditCallbackEvent"
             ></temp-edit>
 
 </template>
 
 <script setup>
-    import {reactive,ref,onMounted,ElMessage } from 'vue';
+    import {reactive,ref,onMounted } from 'vue';
     import {GetTableDetailBySql,SelectList,UpdateList,GetTableList,Add,DoDelete} from '@/http/index.js';
     import tempTable from '@/components/template-model/temp-table.vue';
     import {formatDateTime} from '@/public/index.js';
+    import {ElMessage} from 'element-plus';
     import tempEdit from '@/components/template-model/temp-edit.vue';
 
     let entity = ref("");
@@ -175,7 +174,7 @@
     let buttons = ref([]);
 
     // 注入编辑模态窗口供子组件调用
-    let tempEditModel = ref({
+    let tempEditModel = reactive({
         entity:"",
         action:"",
         data:{},
@@ -216,7 +215,7 @@
             TableName:entity.value,
             ButtonText:"添加",
             ButtonVisibleStatus:"[10,20,30,40,50,60,70,80,90,100]",
-            ButtonFunction:JSON.stringify(addButtonTemplete)
+            ButtonFunction:addButtonTemplete.toString()
         });
     }
     function addButtonTemplete(_entity,_data,_emits){
@@ -233,7 +232,7 @@
             TableName:entity.value,
             ButtonText:"编辑",
             ButtonVisibleStatus:"[10,20,30]",
-            ButtonFunction:JSON.stringify(editButtonTemplete)
+            ButtonFunction:editButtonTemplete.toString()
         });
     }
     function editButtonTemplete(_entity,_data,_emits,_fields){
@@ -245,13 +244,21 @@
         tempEditModel.value.show=true;
     }
 
+    function editButtonInTableEvent(row){
+        tempEditModel.entity="AkdTableButton";
+        tempEditModel.action="edit";
+        tempEditModel.data=row;
+        tempEditModel.emits=initButtons;
+        tempEditModel.show=true;
+    }
+
     async function deleteButtonEvent(){
         await addButtonCommonEvent({
             ButtonType:10,
             TableName:entity.value,
             ButtonText:"删除",
             ButtonVisibleStatus:"[10,20,30]",
-            ButtonFunction:JSON.stringify(deleteButtonTemplete)
+            ButtonFunction:deleteButtonTemplete.toString()
         });
     }
     async function deleteButtonTemplete(_entity,_data,_emits,_fields){
@@ -267,6 +274,9 @@
             }
         });
     }
+    async function deleteButtonnTableEvent(row){
+        await deleteButtonTemplete("AkdTableButton",row);
+    }
 
     async function auditButtonEvent(){
         await addButtonCommonEvent({
@@ -274,7 +284,7 @@
             TableName:entity.value,
             ButtonText:"审核",
             ButtonVisibleStatus:"[10,20,30,40]",
-            ButtonFunction:JSON.stringify(auditButtonTemplete)
+            ButtonFunction:auditButtonTemplete.toString()
         });
     }
     async function auditButtonTemplete(_entity,_data,_emits,_fields){
@@ -295,7 +305,7 @@
             TableName:entity.value,
             ButtonText:"导出",
             ButtonVisibleStatus:"[10,20,30,40,50,60,70,80,90,100]",
-            ButtonFunction:JSON.stringify(auditButtonTemplete)
+            ButtonFunction:auditButtonTemplete.toString()
         });
     }
     async function exportButtonTemplete(_entity,_data,_emits){
@@ -339,7 +349,7 @@
     async function addButtonCommonEvent(tempButtonRow){
         const maxValue = fields.value.reduce((max, obj) => Math.max(max, obj.OrderNum), Number.NEGATIVE_INFINITY);
         tempButtonRow.OrderNum = maxValue+10;
-        let d = await Add(tempButtonRow,entity.value);
+        let d = await Add(tempButtonRow,"AkdTableButton");
         if(d>0){
             ElMessage.success('操作成功');
             await initButtons();
@@ -347,6 +357,8 @@
             ElMessage.error('操作失败，请重试');
         }
     }
+
+
 
     function customButtonEvent(){
         tempEditModel.show=true;
@@ -366,10 +378,14 @@
     async function tempEditEvent(e){
         await initButtons();
     }
+
+    function formatDateTimeEvent(row){
+        return formatDateTime(row.CreateTime);
+    }
 </script>
 
 <style lang="scss" scoped>
-    @import "../../scss/layout-left-right.scss";
+    @import "@/scss/layout-left-right.scss";
     .buttons{
         flex: none;
         padding: 5px 10px;
@@ -384,5 +400,10 @@
     }
     .el-form-item{
         margin-bottom: 0;
+    }
+    :deep(.el-table) {
+        .cell{
+            white-space: pre;
+        }
     }
 </style>

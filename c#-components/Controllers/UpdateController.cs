@@ -13,12 +13,14 @@ namespace c__components.Controllers
     public class UpdateController : ControllerBase
     {
         private AddRepository _add;
+        private SelectRepository _select;
         private UpdateRepository _update;
         private DapperHelper _dapper;
-        public UpdateController(AddRepository add,UpdateRepository update, DapperHelper dapper)
+        public UpdateController(AddRepository add,UpdateRepository update, SelectRepository select, DapperHelper dapper)
         {
             _add = add;
             _update = update;
+            _select = select;
             _dapper = dapper;
         }
 
@@ -30,6 +32,23 @@ namespace c__components.Controllers
             IDbTransaction tran = null;
             try
             {
+
+                IEnumerable<dynamic> fields = await _select.SelectList(new GetByIDAndTableString()
+                {
+                    TableName = "AkdTable",
+                    Where = $" IsInEdit=1 and TableName='{model.TableName}' "
+                });
+
+                Dictionary<string,object> values = new Dictionary<string,object>();
+                foreach (var item in model.Values)
+                {
+                    if (fields.Any(p => p.FieldName == item.Key))
+                    {
+                        values.Add(item.Key, item.Value);
+                    }
+                }
+                model.Values = values; 
+
                 using (conn = _dapper.OpenConnection())
                 {
                     await conn.OpenAsync();

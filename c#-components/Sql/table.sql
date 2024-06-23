@@ -1,4 +1,5 @@
 
+
 create table AkdUser
 (
 	ID int identity(1,1) primary key not null,
@@ -73,6 +74,8 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'[select，strin
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'表配置', @level0type=N'SCHEMA', @level0name=N'dbo', @level1type=N'TABLE', @level1name=N'AkdTable';
 go
 
+
+
 --drop table AkdTableButton
 create table  AkdTableButton
 (
@@ -80,7 +83,7 @@ create table  AkdTableButton
 	TableName varchar(50) not null,
 	ButtonType int not null,
 	ButtonText nvarchar(100) not null, 
-	ButtonVisibleStatus varchar(20) not null,
+	ButtonVisibleStatus varchar(100) not null,
 	ButtonFunction nvarchar(1000) not null,
 	OrderNum int not null,
 	CreateTime datetime not null default(getdate()),
@@ -92,6 +95,27 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'按钮', @level0
 CREATE INDEX idx_akdtablebutton_tablename ON AkdTableButton (TableName);
 go
 
+insert into AkdTable(FiledName,FiledText,FiledType,IsInSearch,SearchValue,IsInTable,InTableWidth,IsInEdit,IsRequest,RequestPrompt,TableFormatFunction,SelectDataFunction,OrderNum,TableName,CreateUserName)
+select 'ID','ID','string',0,'',0,0,0,0,'','','',10,'AkdTableButton','系统管理员'
+union all
+select 'TableName','所属表','string',0,'',0,100,0,0,'','','',20,'AkdTableButton','系统管理员'
+union all
+select 'ButtonType','位置','select',0,'',1,100,1,1,'请选择按钮位置','','[{text:"表格内按钮",id:10},{text:"表格外按钮",id:20}]',30,'AkdTableButton','系统管理员'
+union all
+select 'ButtonText','名称','string',0,'',1,100,1,1,'请输入按钮名称','','',40,'AkdTableButton','系统管理员'
+union all
+select 'ButtonVisibleStatus','可见状态','string',0,'',1,100,1,1,'请输入可见状态','','',50,'AkdTableButton','系统管理员'
+union all
+select 'ButtonFunction','事件','textarea',0,'',1,100,1,1,'请输入按钮事件','','',60,'AkdTableButton','系统管理员'
+union all
+select 'OrderNum','排序','string',0,'',1,100,0,0,'','','',70,'AkdTableButton','系统管理员'
+union all
+select 'CreateUserName','创建人','string',0,'',1,100,0,0,'','','',80,'AkdTableButton','系统管理员'
+union all
+select 'CreateTime','创建时间','datetime',0,'',1,100,0,0,'','','',90,'AkdTableButton','系统管理员'
+
+
+--drop table AkdConfig
 create table AkdConfig
 (
 	ID int identity(1,1) primary key not null,
@@ -104,7 +128,7 @@ create table AkdConfig
 )	
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'配置', @level0type=N'SCHEMA', @level0name=N'dbo', @level1type=N'TABLE', @level1name=N'AkdConfig';
 
-
+-- drop table AkdLogMain
 create table AkdLogMain
 (
 	ID int primary key identity(1,1) not null,
@@ -112,11 +136,11 @@ create table AkdLogMain
 	LogType int not null,
 	Remark nvarchar(100) not null,
 	CreateTime datetime not null default(getdate()),
-	CreateUserID int not null,
 	CreateUserName nvarchar(50) not null
 )
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'表名' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AkdLogMain', @level2type=N'COLUMN',@level2name=N'TableName'
 
+--drop table AkdLogDetail
 create table AkdLogDetail
 (
 	ID int primary key identity(1,1) not null,
@@ -126,6 +150,8 @@ create table AkdLogDetail
 	OldValue nvarchar(500),
 	NewValue nvarchar(500)
 )
+
+--drop table AkdLogRollBack
 create table AkdLogRollBack
 (
 	ID int primary key identity(1,1) not null,
@@ -139,3 +165,8 @@ create view V_AkdMenu
 AS
 	SELECT * FROM AkdMenu WITH(NOLOCK)
 GO
+
+create view V_AkdTableButton
+as
+	select * from AkdTableButton with(nolock)
+go

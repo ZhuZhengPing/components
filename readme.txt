@@ -4,9 +4,9 @@
     column:绑定到表格的字段，可以用column.property获得字段名
     cellValue:当前行对应的值
     index:下标
-3. SelectDataFunction 有2个参数，如果内容为数组，必须是 [text:'a',value:1]这种格式
+3. SelectDataFunction 有2个参数，如果内容为数组，必须是 [text:'a',id:1]这种格式
     field:当前搜索列的实体
-    value:当前搜索的默认值
+    id:当前搜索的默认值
 4. 必须要建表备注，用来记录日志
 5. 不能建updateuserid等字段，直接删除数据
 6. tableButtonEvent 有3个参数，_data:当前记录的实体对象 _fields:当前表的字段类型，entity:表名

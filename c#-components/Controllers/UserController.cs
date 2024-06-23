@@ -52,7 +52,7 @@ namespace c__components.Controllers
             }.FormatResult());
         }
 
-        [HttpPost]
+        [HttpGet]
         public long GetExpTime()
         {
             double tokenExpTimeConfig = double.Parse(_configuration["EncryptHour"]);

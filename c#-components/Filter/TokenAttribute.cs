@@ -23,7 +23,7 @@ namespace c__components.Filter
             {
                 if (context.Result is ObjectResult objectResult)
                 {
-                    objectResult.Value = objectResult.Value.FormatResult();
+                    context.Result = new ObjectResult(objectResult.Value.FormatResult());
                 }
             }
             else

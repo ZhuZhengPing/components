@@ -27,7 +27,7 @@ namespace c__components.Model
     public class GetByIDAndTableString : GetByIDString
     {
         public string TableName { get; set; }
-        public string OrderBy { get; set; }
+        public string? OrderBy { get; set; }
     }
     public class GetPageList : GetByIDAndTableString
     {

@@ -27,7 +27,7 @@ namespace c__components.Repository
             }
             string sql = $@"
                 insert into {model.TableName}({string.Join(",", fields)})
-                values({string.Join(",", values)})
+                values({string.Join(",", values.Select(p=>"'"+p+"'"))})
             ";
             
             int result = await _dapper.Execute(sql, tran, conn);

@@ -4,9 +4,9 @@
         <el-form-item :label="item.FiledText" v-if="item in fields.filter(p=>p.IsInSearch==10)" :key="'search'+item.ID">
             <el-select v-if="item.FiledType=='select'" v-model="data[item.FiledName]" placeholder="" clearable style="width:100%;" @change="searchEvent">
                 <el-option v-for="d in searchFunctionEvent(item,data[item.FiledName])" 
-                    :key="'option'+d.value"
+                    :key="'option'+d.id"
                     :label="d.text"
-                    :value="d.value"
+                    :value="d.id"
                 />
             </el-select>
             <el-input v-else-if="['string','textarea'].includes(item.FiledType)" v-model="data[item.FiledName]" clearable style="width:100%;" @input="searchByDebounceEvent"/>

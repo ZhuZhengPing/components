@@ -2,22 +2,26 @@
 using c__components.Model;
 using System.Data.SqlClient;
 using System.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace c__components.Repository
 {
     public class UpdateRepository
     {
         private DapperHelper _dapper;
-        LogRepository _log;
+        private LogRepository _log;
         public UpdateRepository(DapperHelper dapper, LogRepository log)
         {
             this._dapper = dapper;
-            _log = log;
+            this._log = log;
         }
 
         public async Task<int> Update(UpdateModel model, IDbTransaction tran, SqlConnection conn)
         {
             int result = 0;
+
+
+
             List<string> values = new List<string>();
             foreach (var tempKey in model.Values)
             {

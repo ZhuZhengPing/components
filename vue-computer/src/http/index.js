@@ -92,11 +92,11 @@ export function AddList(data,entity){
     return http.post('/api/Add/AddList',tempData);
 }
 
-export function Update(data){
-    data.createUserName = GetUserName();
+export function Update(data,entity){
+    data.CreateUserName = GetUserName();
     data = {
         ID:data.ID,
-        TableName:data.tableName,
+        TableName:entity,
         Values:data
     };
     return http.post('/api/Update/Update',data);
