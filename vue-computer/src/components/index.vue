@@ -30,19 +30,17 @@
             <div class="content-index">
                 <el-tabs type="border-card" v-model="form.activeTab" :closable="true"  @tab-remove="tabRemoveEvent">
                     <el-tab-pane v-for="item in form.openedTabs"  :label="item.name" :name="item.id" :key="item.url">
-                        <router-view></router-view>
+                        <router-view :name="item.url"></router-view>
                     </el-tab-pane>
                 </el-tabs>
             </div>
         </div>
-
-        
     </div>
 </template>
 <script setup>
     import {reactive,onMounted} from 'vue';
-    import {SelectList,GetUserName} from '@/http/index.js'
-    import {Setting,Menu} from '@element-plus/icons-vue'
+    import {SelectList,GetUserName} from '@/http/index.js';
+    import {Setting,Menu} from '@element-plus/icons-vue';
     import { useRouter } from 'vue-router';
     
 
@@ -55,7 +53,7 @@
         openedTabs:[{
             name:"欢迎",
             id:'0',
-            url:"index/welcome"
+            url:"welcome"
         }],
         activeTab: '0'
     });
@@ -66,7 +64,7 @@
         if (currentTab) {
             form.activeTab = currentTab.id;
         } else {
-            router.push('/index/welcome');
+            router.push('/index/detail');
         }
 
         menusAll = await SelectList({
@@ -77,8 +75,6 @@
             p.Details = menusAll.filter(k=>k.ParentID==p.ID);
             return p;
         });
-
-        console.log("index onmounted");
     });
 
     function selectMenuEvent(id){
@@ -90,15 +86,17 @@
           name: menu.MenuName,
           url:menu.URL
         });
-        router.push(menu.URL);
+        router.push('/index/detail');
       }
         form.activeTab=id;
     }
 
     function tabRemoveEvent(tab){
         console.log(tab);
-        const index = form.openedTabs.findIndex(t => t.id === tab.id);
+        const index = form.openedTabs.findIndex(t => t.id == tab);
         form.openedTabs.splice(index, 1);
+
+        
     }
 </script>
 

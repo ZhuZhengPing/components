@@ -10,9 +10,11 @@ namespace c__components.Repository
     {
         private DapperHelper _dapper;
         private LogRepository _log;
-        public UpdateRepository(DapperHelper dapper, LogRepository log)
+        private SelectRepository _select;
+        public UpdateRepository(DapperHelper dapper, LogRepository log, SelectRepository select)
         {
             this._dapper = dapper;
+            _select = select;
             this._log = log;
         }
 
@@ -20,27 +22,35 @@ namespace c__components.Repository
         {
             int result = 0;
 
-
+            IEnumerable<dynamic> fields = await _select.SelectList(new GetByIDAndTableString()
+            {
+                TableName = "AkdTable",
+                Where = $" IsInEdit=1 and TableName='{model.TableName}' "
+            });
 
             List<string> values = new List<string>();
-            foreach (var tempKey in model.Values)
+            if (fields != null)
             {
-                if (tempKey.Key == "CreateUserName")
+                foreach (var item in model.Values)
                 {
-                    continue;
+                    if (fields.Any(p => p.FieldName == item.Key))
+                    {
+                        values.Add($"{item.Key}='{item.Value}'");
+                    }
                 }
-                values.Add($"{tempKey.Key}='{tempKey.Value}'");
             }
+
+            result = await _log.AddUploadLog(model, tran, conn);
+            if (result == 0)
+            {
+                throw new Exception("添加日志失败，请检查网络");
+            }
+
             string sql = $"update {model.TableName} set {string.Join(",", values)} where ID={model.ID}";
             result = await _dapper.Execute(sql, tran, conn);
             if (result == 0)
             {
                 throw new Exception("修改实体失败，请检查网络");
-            }
-            result = await _log.AddUploadLog(model, tran, conn);
-            if (result == 0)
-            {
-                throw new Exception("添加日志失败，请检查网络");
             }
             return result;
         }

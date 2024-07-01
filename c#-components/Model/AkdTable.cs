@@ -3,12 +3,12 @@
     public class AkdTable
     {
         public int ID { get; set; }
-        public string FiledName { get; set; }
-        public string FiledText { get; set; }
+        public string FieldName { get; set; }
+        public string FieldText { get; set; }
         /// <summary>
         /// 类型：string，date，datetime,year,month，select,number
         /// </summary>
-        public string FiledType { get; set; }
+        public string FieldType { get; set; }
         /// <summary>
         /// 是否显示在搜索中
         /// </summary>

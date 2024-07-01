@@ -43,21 +43,21 @@ namespace c__components.Controllers
             foreach (AkdTable table in list)
             {
                 index++;
-                if (akdTableList.Any(p => p.FiledName == table.FiledName))
+                if (akdTableList.Any(p => p.FiledName == table.FieldName))
                 {
                     var tempTable = table;
-                    tempTable = akdTableList.FirstOrDefault(p => p.FiledName == table.FiledName);
+                    tempTable = akdTableList.FirstOrDefault(p => p.FiledName == table.FieldName);
                     continue;
                 }
 
                 table.InTableWidth = 100;
                 table.TableName = model.Name;
-                switch (table.FiledType)
+                switch (table.FieldType)
                 {
                     case "char":
                     case "varchar":
                     case "nvarchar":
-                        table.FiledType = "string";
+                        table.FieldType = "string";
                         break;
                     case "int":
                     case "smallint":
@@ -65,17 +65,17 @@ namespace c__components.Controllers
                     case "decimal":
                     case "double":
                     case "float":
-                        table.FiledType = "number";
+                        table.FieldType = "number";
                         break;
                     case "datetime":
                     case "date":
-                        if (table.FiledName.EndsWith("Year"))
+                        if (table.FieldName.EndsWith("Year"))
                         {
-                            table.FiledType = "year";
+                            table.FieldType = "year";
                         }
-                        else if (table.FiledName.EndsWith("Month"))
+                        else if (table.FieldName.EndsWith("Month"))
                         {
-                            table.FiledType = "month";
+                            table.FieldType = "month";
                         }
                         break;
                 }
@@ -83,7 +83,7 @@ namespace c__components.Controllers
                     
                 if(table.IsRequest == true)
                 {
-                    table.RequestPrompt = "请输入" + table.FiledText;
+                    table.RequestPrompt = "请输入" + table.FieldText;
                 }
             }
             return list;

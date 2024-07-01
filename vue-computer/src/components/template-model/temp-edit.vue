@@ -4,19 +4,19 @@
         :title="title">
         <div class="content-form">
             <el-form label-position="right" :model="data" :label-width="80">
-                <el-form-item :label="item.FiledText" v-for="item in fields" :key="item.ID">
-                    <el-select v-if="item.FiledType=='select'" v-model.trim="data[item.FiledName]" placeholder="" clearable style="width:100%;" :disabled="item.Disabled">
+                <el-form-item :label="item.FieldText" v-for="item in fields" :key="item.ID">
+                    <el-select v-if="item.FieldType=='select'" v-model.trim="data[item.FieldName]" placeholder="" clearable style="width:100%;" :disabled="item.Disabled">
                         <el-option v-for="d in item.SelectDataFunction"
                                    :key="d.id"
                                    :label="d.text"
                                    :value="d.id" />
                     </el-select>
 
-                    <el-input v-else-if="item.FiledType=='string'" type="text" v-model.trim="data[item.FiledName]" :clearable="true" :disabled="item.Disabled" />
-                    <el-input v-else-if="item.FiledType=='textarea'" type="textarea" v-model.trim="data[item.FiledName]" :clearable="true" :rows="7" :disabled="item.Disabled" />
+                    <el-input v-else-if="item.FieldType=='string'" type="text" v-model.trim="data[item.FieldName]" :clearable="true" :disabled="item.Disabled" />
+                    <el-input v-else-if="item.FieldType=='textarea'" type="textarea" v-model.trim="data[item.FieldName]" :clearable="true" :rows="7" :disabled="item.Disabled" />
 
-                    <el-date-picker v-else-if="['data','datetime','month','year'].includes(item.FiledType)" v-model="data[item.FiledName]" :type="item.FiledType" :clearable="true" :disabled="item.Disabled"></el-date-picker>
-                    <el-input-number v-else-if="item.FiledType=='number'" v-model="data[item.FiledName]" :clearable="true" style="width:100%" :disabled="item.Disabled"></el-input-number>
+                    <el-date-picker v-else-if="['data','datetime','month','year'].includes(item.FieldType)" v-model="data[item.FieldName]" :type="item.FieldType" :clearable="true" :disabled="item.Disabled"></el-date-picker>
+                    <el-input-number v-else-if="item.FieldType=='number'" v-model="data[item.FieldName]" :clearable="true" style="width:100%" :disabled="item.Disabled"></el-input-number>
                 </el-form-item>
             </el-form>
         </div>
@@ -52,7 +52,7 @@
             });
 
             for(let p of fields.value){
-                p.Value = model.value.data[p.FiledName] === undefined ? "" : model.value.data[p.FiledName];
+                p.Value = model.value.data[p.FieldName] === undefined ? "" : model.value.data[p.FieldName];
                 if (model.value.action == "select") {
                     p.Disabled = true;
                 }
@@ -89,7 +89,7 @@
         let requestFields = fields.value.filter(p=>p.IsRequest==true);
         let isSuccess = true;
         requestFields.map(p=>{
-            if(!data.value[p.FiledName]){
+            if(!data.value[p.FieldName]){
                 ElMessage.error(p.RequestPrompt);
                 isSuccess=false;
             }
@@ -106,8 +106,8 @@
         }
 
         if(result>0){
-            ElMessage("操作成功");
-            emits("temp-edit-event",result);
+            ElMessage.success("操作成功");
+            model.value.emits(result);
         }else{
             ElMessage.error("操作失败，请检查网络");
         }

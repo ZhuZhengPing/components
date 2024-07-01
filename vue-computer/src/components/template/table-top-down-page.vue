@@ -57,5 +57,5 @@
     }
 </script>
 <style scoped lang="scss">
-    @import "../../layout-left-right.scss";
+    @import "@/scss/layout-top-middle.scss";
 </style>

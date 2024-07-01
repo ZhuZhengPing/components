@@ -24,6 +24,7 @@ builder.Services.AddScoped<SelectRepository>();
 builder.Services.AddScoped<TableRepository>();
 builder.Services.AddScoped<AddRepository>();
 builder.Services.AddScoped<UpdateRepository>();
+builder.Services.AddScoped<DeleteRepository>();
 
 
 builder.Services.AddEndpointsApiExplorer();

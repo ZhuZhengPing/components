@@ -5,22 +5,22 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Reflection;
 using c__components.Repository;
+using c__components.Filter;
 
 namespace c__components.Controllers
 {
     [Route("api/[controller]/[action]")]
+    [ServiceFilter(typeof(TokenAttribute))]
     [ApiController]
     public class UpdateController : ControllerBase
     {
         private AddRepository _add;
-        private SelectRepository _select;
         private UpdateRepository _update;
         private DapperHelper _dapper;
-        public UpdateController(AddRepository add,UpdateRepository update, SelectRepository select, DapperHelper dapper)
+        public UpdateController(AddRepository add,UpdateRepository update, DapperHelper dapper)
         {
             _add = add;
             _update = update;
-            _select = select;
             _dapper = dapper;
         }
 
@@ -32,23 +32,6 @@ namespace c__components.Controllers
             IDbTransaction tran = null;
             try
             {
-
-                IEnumerable<dynamic> fields = await _select.SelectList(new GetByIDAndTableString()
-                {
-                    TableName = "AkdTable",
-                    Where = $" IsInEdit=1 and TableName='{model.TableName}' "
-                });
-
-                Dictionary<string,object> values = new Dictionary<string,object>();
-                foreach (var item in model.Values)
-                {
-                    if (fields.Any(p => p.FieldName == item.Key))
-                    {
-                        values.Add(item.Key, item.Value);
-                    }
-                }
-                model.Values = values; 
-
                 using (conn = _dapper.OpenConnection())
                 {
                     await conn.OpenAsync();

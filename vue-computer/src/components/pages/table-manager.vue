@@ -14,19 +14,19 @@
                 <el-table :data="fields" stripe style="width:100%;height:100%;flex:auto;" size="small" :highlight-current-row="true">
                     <el-table-column type="index" label="序号" width="40"></el-table-column>
                     
-                    <el-table-column label="字段" prop="FiledName" />
+                    <el-table-column label="字段" prop="FieldName" />
                     
                     <el-table-column prop="TableName" label="实体"></el-table-column>
 
                     <el-table-column label="标题" width="120">
                         <template #default="scope">
-                            <el-input v-model.trim="scope.row.FiledText"  type="text" :clearable="true"  style="width:100%"/>
+                            <el-input v-model.trim="scope.row.FieldText"  type="text" :clearable="true"  style="width:100%"/>
                         </template>
                     </el-table-column> 
 
                     <el-table-column label="类型"  width="120">
                         <template #default="scope">
-                            <el-select v-model="scope.row.FiledType" style="width:100%">
+                            <el-select v-model="scope.row.FieldType" style="width:100%">
                                 <el-option key="1" label="select" value="select" />
                                 <el-option key="2" label="string" value="string" />
                                 <el-option key="3" label="date" value="date" />
@@ -119,9 +119,9 @@
                     <el-form-item>
                         <el-button plain @click="exportButtonEvent"> 导出按钮 </el-button>
                     </el-form-item>
-                    <el-form-item>
+                    <!-- <el-form-item>
                         <el-button plain @click="customButtonEvent"> 自定义按钮 </el-button>
-                    </el-form-item>
+                    </el-form-item> -->
                 </el-form>
             </div>
 
@@ -165,7 +165,7 @@
     import {GetTableDetailBySql,SelectList,UpdateList,GetTableList,Add,DoDelete} from '@/http/index.js';
     import tempTable from '@/components/template-model/temp-table.vue';
     import {formatDateTime} from '@/public/index.js';
-    import {ElMessage} from 'element-plus';
+    import {ElMessage,ElMessageBox} from 'element-plus';
     import tempEdit from '@/components/template-model/temp-edit.vue';
 
     let entity = ref("");
@@ -248,7 +248,7 @@
         tempEditModel.entity="AkdTableButton";
         tempEditModel.action="edit";
         tempEditModel.data=row;
-        tempEditModel.emits=initButtons;
+        tempEditModel.emits=tempEditCallbackEvent;
         tempEditModel.show=true;
     }
 
@@ -262,20 +262,24 @@
         });
     }
     async function deleteButtonTemplete(_entity,_data,_emits,_fields){
-        ElMessageBox.confirm("确定要删除吗？","提示").then(()=>{
-            let d = DoDelete({
+        ElMessageBox.confirm("确定要删除吗？","提示").then(async ()=>{
+            let d = await DoDelete({
                 ID:_data.ID,
                 TableName:_entity
             });
+            console.log(d);
             if(d>0){
-                ElMessage.success('操作成功');
+                ElMessage.success("操作成功");
+                if(_emits){
+                    _emits();
+                }
             }else{
-                ElMessage.error('操作失败，请重试');
+                ElMessage.error("操作失败，请重试");
             }
         });
     }
     async function deleteButtonnTableEvent(row){
-        await deleteButtonTemplete("AkdTableButton",row);
+        await deleteButtonTemplete("AkdTableButton",row,initButtons);
     }
 
     async function auditButtonEvent(){
@@ -292,9 +296,9 @@
             _data.Status=100;
             let d = Update(_data);
             if(d>0){
-                ElMessage.success('操作成功');
+                ElMessage.success("操作成功");
             }else{
-                ElMessage.error('操作失败，请重试');
+                ElMessage.error("操作失败，请重试");
             }
         });
     }
@@ -351,18 +355,18 @@
         tempButtonRow.OrderNum = maxValue+10;
         let d = await Add(tempButtonRow,"AkdTableButton");
         if(d>0){
-            ElMessage.success('操作成功');
+            ElMessage.success("操作成功");
             await initButtons();
         }else{
-            ElMessage.error('操作失败，请重试');
+            ElMessage.error("操作失败，请重试");
         }
     }
 
 
 
-    function customButtonEvent(){
-        tempEditModel.show=true;
-    }
+    // function customButtonEvent(){
+    //     tempEditModel.show=true;
+    // }
     async function tempEditCallbackEvent(d){
         tempEditModel.show=false;
         await initButtons();

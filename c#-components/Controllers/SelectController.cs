@@ -36,13 +36,13 @@ namespace c__components.Controllers
             if (string.IsNullOrWhiteSpace(model.OrderBy))
             {
                 var entityTable = await _table.GetTableFields(model.TableName);
-                if (entityTable.Any(p => p.FiledName == "OrderNum"))
+                if (entityTable.Any(p => p.FieldName == "OrderNum"))
                 {
                     model.OrderBy = "OrderNum desc";
                 }
                 else
                 {
-                    model.OrderBy = "ID desc";
+                    model.OrderBy = "ID";
                 }
             }
             return await _select.SelectList(model);
@@ -54,7 +54,7 @@ namespace c__components.Controllers
             if (string.IsNullOrWhiteSpace(model.OrderBy))
             {
                 var entityTable = await _table.GetTableFields(model.TableName);
-                if (entityTable.Any(p => p.FiledName == "OrderNum"))
+                if (entityTable.Any(p => p.FieldName == "OrderNum"))
                 {
                     model.OrderBy = "OrderNum desc,ID desc";
                 }

@@ -21,11 +21,11 @@ namespace c__components.Repository
         public async Task<int> AddAddLog(UpdateModel model, IDbTransaction tran, SqlConnection conn)
         {
             var tables = await _table.GetTableFields(model.TableName);
-            var logNameRow = tables.FirstOrDefault(p => p.FiledName.EndsWith("Name") && p.FiledName != "CreateUserName");
+            var logNameRow = tables.FirstOrDefault(p => p.FieldName.EndsWith("Name") && p.FieldName != "CreateUserName");
             string logName = string.Empty;
             if (logNameRow != null)
             {
-                logName = logNameRow.FiledText;
+                logName = logNameRow.FieldText;
             }
             string tableRemark = await _table.GetTableRemark(model.TableName);
             string remark = $"添加{tableRemark}{logName}";
@@ -41,15 +41,9 @@ namespace c__components.Repository
 
         public async Task<int> AddUploadLog(UpdateModel model, IDbTransaction tran, SqlConnection conn)
         {
-            var tables = await _table.GetTableFields(model.TableName);
-            var logNameRow = tables.FirstOrDefault(p => p.FiledName.EndsWith("Name") && p.FiledName != "CreateUserName");
-            string logName = string.Empty;
-            if (logNameRow != null)
-            {
-                logName = logNameRow.FiledText;
-            }
+            var tables = await _select.SelectList("AkdTable",$"TableName='{model.TableName}'");
             string tableRemark = await _table.GetTableRemark(model.TableName);
-            string remark = $"修改{tableRemark}{logName}";
+            string remark = $"修改{tableRemark}表";
 
             var UpdateUserNameModel = model.Values.FirstOrDefault(p => p.Key == "CreateUserName");
 
@@ -68,21 +62,34 @@ namespace c__components.Repository
             GetByIDAndTable getById = new GetByIDAndTable();
             getById.TableName = model.TableName;
             getById.ID = model.ID;
-            var instance = _select.Select(getById);
+            dynamic instance = await _select.Select(getById);
+
 
             foreach (var tempKey in model.Values)
             {
+                if (tempKey.Key == "CreateTime")
+                {
+                    continue;
+                }
                 AkdLogDetail d = new AkdLogDetail();
-                d.AkdLogMainID = akdLogMainId;
                 d.OldValue = GetPropertyValue(instance, tempKey.Key);
                 d.NewValue = tempKey.Value.ToString();
-                d.FiledName = tempKey.Key;
-                var tempTable = tables.FirstOrDefault(p => p.FiledName == d.FiledName);
-                if (tempTable != null)
+
+                if(d.OldValue != d.NewValue)
                 {
-                    d.FileText = tempTable.FiledText;
+                    d.AkdLogMainID = akdLogMainId;
+                    d.FiledName = tempKey.Key;
+                    var tempTable = tables.FirstOrDefault(p => p.FieldName == d.FiledName);
+                    if (tempTable != null)
+                    {
+                        d.FileText = tempTable.FieldText;
+                    }
+                    details.Add(d);
                 }
-                details.Add(d);
+            }
+            if (details.Count == 0)
+            {
+                return 1;
             }
             int result = await AddAkdLogDetail(details, tran, conn);
             if (result == 0)
@@ -95,11 +102,11 @@ namespace c__components.Repository
         public async Task<int> AddDeleteLog(UpdateByIDAndTable model, IDbTransaction tran, SqlConnection conn)
         {
             var tables = await _table.GetTableFields(model.TableName);
-            var logNameRow = tables.FirstOrDefault(p => p.FiledName.EndsWith("Name") && p.FiledName != "CreateUserName");
+            var logNameRow = tables.FirstOrDefault(p => p.FieldName.EndsWith("Name") && p.FieldName != "CreateUserName");
             string logName = string.Empty;
             if (logNameRow != null)
             {
-                logName = logNameRow.FiledText;
+                logName = logNameRow.FieldText;
             }
             string tableRemark = await _table.GetTableRemark(model.TableName);
             string remark = $"删除{tableRemark}{logName}";
@@ -131,10 +138,10 @@ namespace c__components.Repository
         public async Task<int> AddAkdLogDetail(IEnumerable<AkdLogDetail> list, IDbTransaction tran, SqlConnection conn)
         {
             string sql = @"
-                insert into AkdLogDetail(AkdLogMainID,FiledName,FileRemark,OldValue,NewValue)
-                values(@AkdLogMainID,@FiledName,@FileRemark,@OldValue,@NewValue)
+                insert into AkdLogDetail(AkdLogMainID,FiledName,FileText,OldValue,NewValue)
+                values(@AkdLogMainID,@FiledName,@FileText,@OldValue,@NewValue)
             ";
-            return await this._dapper.Query<int>(sql, list, tran, conn);
+            return await this._dapper.Execute(sql, list, tran, conn);
         }
 
         private async Task<int> AddUpdateAkdLogRollBack(UpdateModel model, IEnumerable<AkdLogDetail> list, int akdLogMainId, IDbTransaction tran, SqlConnection conn)
@@ -166,7 +173,7 @@ namespace c__components.Repository
             getById.ID = model.ID;
             var instance = await _select.Select(getById);
 
-            string fields = string.Join(",", tableFields.Select(p => p.FiledName));
+            string fields = string.Join(",", tableFields.Select(p => p.FieldName));
             string values = GetTempValues(instance);
 
             AkdLogRollBack rb = new AkdLogRollBack();
@@ -195,17 +202,31 @@ namespace c__components.Repository
             return string.Join(",", values);
         }
 
-        public string GetPropertyValue(object obj, string propertyName)
+        public string GetPropertyValue(dynamic obj, string propertyName)
         {
-            // 获取属性信息
-            PropertyInfo property = obj.GetType().GetProperty(propertyName);
-            // 获取属性值
-            object tempValue = property.GetValue(obj);
-            if (tempValue == null)
+            //// 获取属性信息
+            //PropertyInfo property = obj.GetType().GetProperty(propertyName);
+            //// 获取属性值
+            //object tempValue = property.GetValue(obj);
+            //if (tempValue == null)
+            //{
+            //    return "";
+            //}
+            //return tempValue.ToString();
+
+            if (obj is IDictionary<string, object> dictionary)
             {
-                return "";
+                if (dictionary.ContainsKey(propertyName))
+                {
+                    object value = dictionary[propertyName];
+                    if (value == null)
+                    {
+                        return "";
+                    }
+                    return value.ToString();
+                }
             }
-            return tempValue.ToString();
+            return "";
         }
     }
 }

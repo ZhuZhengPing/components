@@ -46,9 +46,9 @@ drop table AkdTable
 create table AkdTable
 (
 	ID int identity(1,1) primary key not null,
-	FiledName varchar(100) not null,
-	FiledText nvarchar(100) not null,
-	FiledType varchar(50) not null,   -- string，date，select,custom
+	FieldName varchar(100) not null,
+	FieldText nvarchar(100) not null,
+	FieldType varchar(50) not null,   -- string，date，select,custom
 	
 	IsInSearch int not null,
 	SearchValue nvarchar(100),
@@ -70,7 +70,7 @@ create table AkdTable
 	CreateUserName nvarchar(50) not null
 )
 CREATE INDEX idx_akdtable_tablename ON AkdTable (TableName);
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'[select，string，date，datetime,month,year,number,textarea]' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AkdTable', @level2type=N'COLUMN',@level2name=N'FiledType'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'[select，string，date，datetime,month,year,number,textarea]' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AkdTable', @level2type=N'COLUMN',@level2name=N'FieldType'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'表配置', @level0type=N'SCHEMA', @level0name=N'dbo', @level1type=N'TABLE', @level1name=N'AkdTable';
 go
 
@@ -90,29 +90,30 @@ create table  AkdTableButton
 	CreateUserName nvarchar(50) not null
 )
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'10：表格里面的按钮，20：表格外面的按钮，例如添加、导出等' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AkdTableButton', @level2type=N'COLUMN',@level2name=N'ButtonType'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'按钮名称' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AkdTableButton', @level2type=N'COLUMN',@level2name=N'ButtonText'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'按钮显示的状态，用数组分割[]，默认空数组' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AkdTableButton', @level2type=N'COLUMN',@level2name=N'ButtonVisibleStatus'
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'按钮', @level0type=N'SCHEMA', @level0name=N'dbo', @level1type=N'TABLE', @level1name=N'AkdTableButton';
 CREATE INDEX idx_akdtablebutton_tablename ON AkdTableButton (TableName);
 go
 
-insert into AkdTable(FiledName,FiledText,FiledType,IsInSearch,SearchValue,IsInTable,InTableWidth,IsInEdit,IsRequest,RequestPrompt,TableFormatFunction,SelectDataFunction,OrderNum,TableName,CreateUserName)
+insert into AkdTable(FieldName,FieldText,FieldType,IsInSearch,SearchValue,IsInTable,InTableWidth,IsInEdit,IsRequest,RequestPrompt,TableFormatFunction,SelectDataFunction,OrderNum,TableName,CreateUserName)
 select 'ID','ID','string',0,'',0,0,0,0,'','','',10,'AkdTableButton','系统管理员'
 union all
-select 'TableName','所属表','string',0,'',0,100,0,0,'','','',20,'AkdTableButton','系统管理员'
+select 'TableName','所属表','string',0,'',0,100,0,0,'','','',90,'AkdTableButton','系统管理员'
 union all
-select 'ButtonType','位置','select',0,'',1,100,1,1,'请选择按钮位置','','[{text:"表格内按钮",id:10},{text:"表格外按钮",id:20}]',30,'AkdTableButton','系统管理员'
+select 'ButtonType','位置','select',0,'',1,100,1,1,'请选择按钮位置','','[{text:"表格内按钮",id:10},{text:"表格外按钮",id:20}]',80,'AkdTableButton','系统管理员'
 union all
-select 'ButtonText','名称','string',0,'',1,100,1,1,'请输入按钮名称','','',40,'AkdTableButton','系统管理员'
+select 'ButtonText','名称','string',0,'',1,100,1,1,'请输入按钮名称','','',70,'AkdTableButton','系统管理员'
 union all
-select 'ButtonVisibleStatus','可见状态','string',0,'',1,100,1,1,'请输入可见状态','','',50,'AkdTableButton','系统管理员'
+select 'ButtonVisibleStatus','可见状态','string',0,'',1,100,1,1,'请输入可见状态','','',60,'AkdTableButton','系统管理员'
 union all
-select 'ButtonFunction','事件','textarea',0,'',1,100,1,1,'请输入按钮事件','','',60,'AkdTableButton','系统管理员'
+select 'ButtonFunction','事件','textarea',0,'',1,100,1,1,'请输入按钮事件','','',50,'AkdTableButton','系统管理员'
 union all
-select 'OrderNum','排序','string',0,'',1,100,0,0,'','','',70,'AkdTableButton','系统管理员'
+select 'OrderNum','排序','string',0,'',1,100,0,0,'','','',40,'AkdTableButton','系统管理员'
 union all
-select 'CreateUserName','创建人','string',0,'',1,100,0,0,'','','',80,'AkdTableButton','系统管理员'
+select 'CreateUserName','创建人','string',0,'',1,100,0,0,'','','',30,'AkdTableButton','系统管理员'
 union all
-select 'CreateTime','创建时间','datetime',0,'',1,100,0,0,'','','',90,'AkdTableButton','系统管理员'
+select 'CreateTime','创建时间','datetime',0,'',1,100,0,0,'','','',20,'AkdTableButton','系统管理员'
 
 
 --drop table AkdConfig

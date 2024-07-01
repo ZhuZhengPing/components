@@ -16,7 +16,7 @@ namespace c__components.Repository
             string sql = $@"
                 SELECT 
                     t.name AS TableName,
-                    c.name AS FiledName,
+                    c.name AS FieldName,
                     ty.name AS FiledType,
                     c.is_nullable IsCanNull,
                     c.max_length MaxFieldLength,

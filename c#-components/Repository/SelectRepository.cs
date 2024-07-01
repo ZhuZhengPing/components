@@ -15,7 +15,19 @@ namespace c__components.Repository
             return await _dapper.Query<dynamic>($" select * from {model.TableName} with(nolock) where id={model.ID} ");
         }
 
-
+        public async Task<IEnumerable<dynamic>> SelectList(string tableName)
+        {
+            GetByIDAndTableString model = new GetByIDAndTableString();
+            model.TableName = tableName;
+            return await SelectList(model);
+        }
+        public async Task<IEnumerable<dynamic>> SelectList(string tableName,string where)
+        {
+            GetByIDAndTableString model = new GetByIDAndTableString();
+            model.TableName = tableName;
+            model.Where = where;
+            return await SelectList(model);
+        }
         public async Task<IEnumerable<dynamic>> SelectList(GetByIDAndTableString model)
         {
             string sql = $" select * from {model.TableName} with(nolock) ";
