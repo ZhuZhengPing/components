@@ -201,7 +201,7 @@
     }
 
     async function saveEvent(){
-        let d = await UpdateList(data.value);
+        let d = await UpdateList(fields.value,entity.value);
         if(d>0){
             ElMessage.success('操作成功');
         }else{
@@ -361,8 +361,6 @@
             ElMessage.error("操作失败，请重试");
         }
     }
-
-
 
     // function customButtonEvent(){
     //     tempEditModel.show=true;

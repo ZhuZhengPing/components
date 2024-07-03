@@ -6,4 +6,4 @@ bin/
 
 obj/
 
-vite.config.js
+*.config.js

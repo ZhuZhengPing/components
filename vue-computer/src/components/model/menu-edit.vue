@@ -18,7 +18,7 @@
                 <el-input v-model="data.URL" size="large" clearable/>
             </el-form-item>
             <el-form-item label="排序值">
-                <el-input-number v-model="data.OrderNum" size="large" :step="10" style="width:100%;" clearable/>
+                <el-input-number v-model="data.OrderNum" size="large" :step="10" style="width:100%;" :controls="false" clearable/>
             </el-form-item>
         </el-form>
     </div>
@@ -98,10 +98,10 @@
             return;
         }
         let result = 0;
-        if(data.ID){
-            result = await Update(data);
+        if(data.value.ID){
+            result = await Update(data.value,"AkdMenu");
         }else{
-            result = await Add(data);
+            result = await Add(data.value,"AkdMenu");
         }
         if(result>0){
             ElMessage("操作成功");

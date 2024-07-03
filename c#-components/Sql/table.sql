@@ -1,5 +1,5 @@
 
-
+--drop table AkdUser
 create table AkdUser
 (
 	ID int identity(1,1) primary key not null,
@@ -114,6 +114,9 @@ union all
 select 'CreateUserName','创建人','string',0,'',1,100,0,0,'','','',30,'AkdTableButton','系统管理员'
 union all
 select 'CreateTime','创建时间','datetime',0,'',1,100,0,0,'','','',20,'AkdTableButton','系统管理员'
+
+
+
 
 
 --drop table AkdConfig

@@ -17,10 +17,10 @@ namespace c__components.Repository
                 SELECT 
                     t.name AS TableName,
                     c.name AS FieldName,
-                    ty.name AS FiledType,
+                    ty.name AS FieldType,
                     c.is_nullable IsCanNull,
                     c.max_length MaxFieldLength,
-                    ep.value AS FiledText
+                    ep.value AS FieldText
                 FROM 
                     sys.tables t
                 INNER JOIN 

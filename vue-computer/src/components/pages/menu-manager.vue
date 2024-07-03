@@ -62,9 +62,9 @@
 <script setup>   
     import {ref} from 'vue';
     import{SelectList,Update,GetUserName} from '@/http/index.js';
+    import menuEdit from '@/components/model/menu-edit.vue';
     import{formatDateTime} from '@/public/index.js';
-    // import menuEdit from '@/model/menu-edit.vue';
-    import {Folder,Menu} from '@element-plus/icons-vue'
+    import {Folder,Menu} from '@element-plus/icons-vue';
 
     let treeElement = ref(null);
     let treeData = ref([]);
@@ -107,7 +107,6 @@
         if(currentElement){
             form.value.ParentID = currentElement.ParentID || currentElement.ID;
         }
-        //console.log(form);
     }
     
     function menuEditEvent(){
