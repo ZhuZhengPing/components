@@ -22,8 +22,24 @@ namespace c__components.Repository
             List<object> values = new List<object>();
             foreach (var tempKey in model.Values)
             {
-                fields.Add(tempKey.Key);
-                values.Add(tempKey.Value);
+                string value = tempKey.Value?.ToString();
+                string key = tempKey.Key.ToString();
+                if (key == "ID" || key == "CreateTime")
+                {
+                    continue;
+                }
+
+                if (value == "True")
+                {
+                    value = "1";
+                }
+                else if(value=="False")
+                {
+                    value="0";
+                }
+
+                fields.Add(key);
+                values.Add(value);
             }
             string sql = $@"
                 insert into {model.TableName}({string.Join(",", fields)})

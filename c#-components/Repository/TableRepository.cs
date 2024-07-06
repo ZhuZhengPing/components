@@ -18,7 +18,7 @@ namespace c__components.Repository
                     t.name AS TableName,
                     c.name AS FieldName,
                     ty.name AS FieldType,
-                    c.is_nullable IsCanNull,
+                    c.is_nullable IsRequest,
                     c.max_length MaxFieldLength,
                     ep.value AS FieldText
                 FROM 

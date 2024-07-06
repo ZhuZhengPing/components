@@ -48,6 +48,8 @@ namespace c__components.Controllers
             return await _select.SelectList(model);
         }
 
+
+
         [HttpPost]
         public async Task<DapperPageModel<dynamic>> SelectListPages(GetPageList model)
         {
@@ -64,6 +66,91 @@ namespace c__components.Controllers
                 }
             }
             return await _select.SelectListPages(model);
+        }
+
+        [HttpPost]
+        public async Task<IEnumerable<dynamic>> SelectTreeList(GetByIDAndTableString model)
+        {
+            if (string.IsNullOrWhiteSpace(model.OrderBy))
+            {
+                var entityTable = await _table.GetTableFields(model.TableName);
+                if (entityTable.Any(p => p.FieldName == "OrderNum"))
+                {
+                    model.OrderBy = "OrderNum desc";
+                }
+                else
+                {
+                    model.OrderBy = "ID";
+                }
+            }
+            if (string.IsNullOrWhiteSpace(model.Where))
+            {
+                model.Where = "ParentID=0";
+            }
+            else
+            {
+                model.Where = model.Where + " and ParentID=0 ";
+            }
+            IEnumerable<dynamic> result = await _select.SelectList(model);
+            if (result.Count() > 0)
+            {
+                string ids = string.Join(",", result.Select(p => p.ID));
+
+                GetByIDAndTableString childrensModel = new GetByIDAndTableString();
+                childrensModel.TableName = model.TableName;
+                childrensModel.Where = $"ParentID in ({ids})";
+                childrensModel.OrderBy = model.OrderBy;
+                var childrens = await _select.SelectList(childrensModel);
+
+                foreach (var item in result)
+                {
+                    item.children = childrens.Where(p => p.ParentID == item.ID);
+                }
+            }
+            return result;
+        }
+
+        [HttpPost]
+        public async Task<DapperPageModel<dynamic>> SelectTreeListPages(GetPageList model)
+        {
+            if (string.IsNullOrWhiteSpace(model.OrderBy))
+            {
+                var entityTable = await _table.GetTableFields(model.TableName);
+                if (entityTable.Any(p => p.FieldName == "OrderNum"))
+                {
+                    model.OrderBy = "OrderNum desc";
+                }
+                else
+                {
+                    model.OrderBy = "ID";
+                }
+            }
+            if(string.IsNullOrWhiteSpace(model.Where))
+            {
+                model.Where = "ParentID=0";
+            }
+            else
+            {
+                model.Where = model.Where + " and ParentID=0 ";
+            }
+
+            DapperPageModel<dynamic> result = await _select.SelectListPages(model);
+            if (result.total > 0)
+            {
+                string ids = string.Join(",", result.data.Select(p => p.ID));
+
+                GetByIDAndTableString childrensModel = new GetByIDAndTableString();
+                childrensModel.TableName = model.TableName;
+                childrensModel.Where = $"ParentID in ({ids})";
+                childrensModel.OrderBy = model.OrderBy;
+                var childrens = await _select.SelectList(childrensModel);
+                
+                foreach (var item in result.data)
+                {
+                    item.children = childrens.Where(p => p.ParentID == item.ID);
+                }
+            }
+            return result;
         }
     }
 }

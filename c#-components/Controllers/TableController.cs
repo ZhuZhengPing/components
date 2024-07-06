@@ -31,27 +31,54 @@ namespace c__components.Controllers
         }
 
         [HttpPost]
-        public async Task<IEnumerable<AkdTable>> GetTableDetailBySql(GetByName model)
+        public async Task<IEnumerable<dynamic>> GetTableDetailBySql(GetByName model)
         {
-            IEnumerable<AkdTable> list = await _table.GetTableFields(model.Name);
-
             GetByIDAndTableString m = new GetByIDAndTableString();
-            m.TableName = model.Name;
+            m.TableName = "AkdTable";
+            m.Where = $" TableName='{model.Name}' ";
             IEnumerable<dynamic> akdTableList = await _select.SelectList(m);
             
+            // 如果数据库有值，直接返回数据库
+            if(akdTableList != null && akdTableList.Count() > 0)
+            {
+                return akdTableList;
+            }
+
+
+            IEnumerable<AkdTable> list = await _table.GetTableFields(model.Name);
             int index = 0;
             foreach (AkdTable table in list)
             {
                 index++;
-                if (akdTableList.Any(p => p.FiledName == table.FieldName))
+
+                table.IsRequest = !table.IsRequest;
+                if (table.IsRequest == true)
                 {
-                    var tempTable = table;
-                    tempTable = akdTableList.FirstOrDefault(p => p.FiledName == table.FieldName);
-                    continue;
+                    table.RequestPrompt = "请输入" + table.FieldText;
                 }
 
                 table.InTableWidth = 100;
                 table.TableName = model.Name;
+                table.IsInSearch = 1;
+                table.IsInEdit = true;
+                table.IsInTable = true;
+
+                if (table.FieldName == "ID")
+                {
+                    table.IsInSearch = 0;
+                    table.IsInEdit = false;
+                    table.IsInTable = false;
+                    table.RequestPrompt = "";
+                }
+                else if(table.FieldName == "CreateTime" || table.FieldName == "CreateUserName")
+                {
+                    table.IsInSearch = 0;
+                    table.IsInEdit = false;
+                    table.RequestPrompt = "";
+                }
+
+              
+
                 switch (table.FieldType)
                 {
                     case "char":
@@ -81,10 +108,7 @@ namespace c__components.Controllers
                 }
                 table.OrderNum = index * 10;
                     
-                if(table.IsRequest == true)
-                {
-                    table.RequestPrompt = "请输入" + table.FieldText;
-                }
+                
             }
             return list;
         }

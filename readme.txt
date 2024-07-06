@@ -10,5 +10,4 @@
 4. 必须要建表备注，用来记录日志
 5. 不能建updateuserid等字段，直接删除数据
 6. tableButtonEvent 有3个参数，_data:当前记录的实体对象 _fields:当前表的字段类型，entity:表名
-//7. 如果是主从结构，子表必须要有ParentID(int)
-    
+7. 如果是主从结构，子表必须要有ParentID(int)，表中的名称必须以Name结尾，并且多个以Name结尾的字段出现的话，重要的字段要排在前面    

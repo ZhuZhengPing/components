@@ -14,9 +14,9 @@
                 <el-table :data="fields" stripe style="width:100%;height:100%;flex:auto;" size="small" :highlight-current-row="true">
                     <el-table-column type="index" label="序号" width="40"></el-table-column>
                     
-                    <el-table-column label="字段" prop="FieldName" />
+                    <el-table-column label="字段" prop="FieldName" width="120" />
                     
-                    <el-table-column prop="TableName" label="实体"></el-table-column>
+                    <el-table-column prop="TableName" label="实体" width="100"></el-table-column>
 
                     <el-table-column label="标题" width="120">
                         <template #default="scope">
@@ -41,7 +41,7 @@
 
                     <el-table-column label="是否搜索">
                         <template #default="scope">
-                            <el-switch v-model="scope.row.IsInSearch" :clearable="true"  style="width:100%"/>
+                            <el-switch v-model="scope.row.IsInSearch" :clearable="true"  style="width:100%" :active-value="1" :inactive-value="0"/>
                         </template>
                     </el-table-column>
 
@@ -75,19 +75,19 @@
                         </template>
                     </el-table-column>
                     
-                    <el-table-column label="空提示语" width="120">
+                    <el-table-column label="空提示语" width="170">
                         <template #default="scope">
                             <el-input v-model.trim="scope.row.RequestPrompt" :clearable="true"  style="width:100%"/>
                         </template>
                     </el-table-column>
 
-                    <el-table-column label="表格格式化函数" width="200">
+                    <el-table-column label="表格格式化函数" width="300">
                         <template #default="scope">
                             <el-input v-model="scope.row.TableFormatFunction" autosize :rows="3" type="textarea" :clearable="true" style="width:100%"/>
                         </template>
                     </el-table-column>
                     
-                    <el-table-column label="下拉框格式化函数" width="200">
+                    <el-table-column label="下拉框格式化函数" width="300">
                         <template #default="scope">
                             <el-input v-model="scope.row.SelectDataFunction" autosize :clearable="true" :rows="3" type="textarea" style="width:100%"/>
                         </template>
@@ -98,7 +98,6 @@
                             <el-input-number v-model.trim="scope.row.OrderNum" :step="10" autosize :clearable="true"  :controls="false" style="width:100%"/>
                         </template>
                     </el-table-column>
-
                 </el-table> 
             </div>
 
@@ -119,9 +118,9 @@
                     <el-form-item>
                         <el-button plain @click="exportButtonEvent"> 导出按钮 </el-button>
                     </el-form-item>
-                    <!-- <el-form-item>
+                    <el-form-item>
                         <el-button plain @click="customButtonEvent"> 自定义按钮 </el-button>
-                    </el-form-item> -->
+                    </el-form-item>
                 </el-form>
             </div>
 
@@ -188,8 +187,13 @@
 
     async function selectAkdTableEvent(key,path){
         entity.value=menus.value[key].replace("V_","");
-        fields.value = await GetTableDetailBySql({Name:entity.value});
+        //fields.value = await GetTableDetailBySql({Name:entity.value});
+        await init(entity.value);
         await initButtons();
+    }
+
+    async function init(entity){
+        fields.value = await GetTableDetailBySql({Name:entity});
     }
 
     async function initButtons(){
@@ -201,8 +205,9 @@
     }
 
     async function saveEvent(){
-        let d = await UpdateList(fields.value,entity.value);
+        let d = await UpdateList(fields.value,"AkdTable");
         if(d>0){
+
             ElMessage.success('操作成功');
         }else{
             ElMessage.error('操作失败，请重试');
@@ -362,9 +367,9 @@
         }
     }
 
-    // function customButtonEvent(){
-    //     tempEditModel.show=true;
-    // }
+    function customButtonEvent(){
+         tempEditModel.show=true;
+    }
     async function tempEditCallbackEvent(d){
         tempEditModel.show=false;
         await initButtons();

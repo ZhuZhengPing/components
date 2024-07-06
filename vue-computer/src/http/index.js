@@ -1,4 +1,7 @@
-import http from "@/http/http.js"
+import http from "@/http/http.js";
+// 这个是格式化的基础方法，用于SelectFormatFields这个函数调用
+// 前端传过来的值可能是：TableFormatFunction、SelectDataFunction字符串，可以直接转换并且使用这2个方法
+import {TableFormatFunction,SelectDataFunction} from "@/public/template.js";
 
 export function DoLogin(data){
     return http.post('/api/User/DoLogin',data);
@@ -94,24 +97,25 @@ export function AddList(data,entity){
 
 export function Update(data,entity){
     data.CreateUserName = GetUserName();
-    data = {
+    var tempData = {
         ID:data.ID,
         TableName:entity,
         Values:data
     };
-    return http.post('/api/Update/Update',data);
+    return http.post('/api/Update/Update',tempData);
 }
 
-export function UpdateList(data){
+export function UpdateList(data,entity){
+    let tempArray=[];
     for(var i=0;i<data.length;i++){
-        data[i].createUserName=GetUserName();
-        data[i]={
+        data[i].CreateUserName=GetUserName();
+        tempArray.push({
             ID:data[i].ID,
-            TableName:data[i].TableName,
+            TableName:entity,
             Values:data[i]
-        };
+        });
     }
-    return http.post('/api/Update/UpdateList',data);
+    return http.post('/api/Update/UpdateList',tempArray);
 }
 
 export function DoDelete(data){
@@ -134,8 +138,17 @@ export function SelectListPages(data){
     return http.post('/api/Select/SelectListPages',data);
 }
 
+export function SelectTreeList(data){
+    return http.post('/api/Select/SelectTreeList',data);
+}
+
+export function SelectTreeListPages(data){
+    return http.post('/api/Select/SelectTreeListPages',data);
+}
+
 export function SelectConfigByID(codeno){
     return http.post('/api/Config/SelectConfigByID',{
         Name:codeno
     });
 }
+
