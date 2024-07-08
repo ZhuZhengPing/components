@@ -83,7 +83,7 @@
             let result = await SelectListPages({
                 ...where.value,
                 TableName:props.entity,
-                HasChildren:props.hasChildren,
+                HasChildren:props.hasChildren||"",
                 PageIndex:pageIndex,
                 PageSize:props.pageSize
             });
@@ -94,7 +94,7 @@
             list=await SelectList({
                 ...where.value,
                 TableName:props.entity,
-                HasChildren:props.hasChildren
+                HasChildren:props.hasChildren||""
             });
         }
         loading.value=false;
