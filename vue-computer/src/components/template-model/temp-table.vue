@@ -19,7 +19,6 @@
                 </template>
             </template>
         </el-table>
-
         <div v-loading="loading" class="table-page" v-if="props.pageSize>0">
             <el-pagination layout="total,prev, pager, next" :total="form.total" @current-change="pageEvent" :page-size="props.pageSize" />
         </div>
@@ -36,9 +35,8 @@
         entity:String,
         fields:Array,
         buttons:Array,
-        // where:Object,
-        //action:String,    //  add , edit , select
-        pageSize:Number
+        pageSize:Number,
+        hasChildren:String
     });
     const emits = defineEmits(['table-event']);
     let where = defineModel();
@@ -82,18 +80,21 @@
     async function getData(){
         loading.value=true;
         if(props.pageSize){
-           var result = await SelectListPages({
+            let result = await SelectListPages({
                 ...where.value,
                 TableName:props.entity,
+                HasChildren:props.hasChildren,
                 PageIndex:pageIndex,
                 PageSize:props.pageSize
             });
+            
             list=result.data;
             total=result.total;
         }else{
             list=await SelectList({
                 ...where.value,
                 TableName:props.entity,
+                HasChildren:props.hasChildren
             });
         }
         loading.value=false;

@@ -28,6 +28,7 @@ namespace c__components.Model
     {
         public string TableName { get; set; }
         public string? OrderBy { get; set; }
+        public string? HasChildren { get; set; }
     }
     public class GetPageList : GetByIDAndTableString
     {

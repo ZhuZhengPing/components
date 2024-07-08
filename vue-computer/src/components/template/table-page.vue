@@ -12,6 +12,8 @@
             <temp-table :entity="entity" 
                    :fields="fields.filter(p=>p.IsInTable)" 
                    :buttons="buttons.filter(p=>p.ButtonType==10)"
+                   :pageSize="pageSize"
+                   :hasChildren="hasChildren"
                    v-model="where"
                    @table-event="tableEvent"></temp-table>
         </div>
@@ -25,7 +27,14 @@
     import tempTable from '@/components/template-model/temp-table.vue';
 
     let entity = ref(getQueryString("entity"));
-    let pageSize = ref(getQueryString("pageSize"));
+    
+    let pageSize = ref(0);
+    let page = getQueryString("page");
+    if(page){
+        pageSize=20;
+    }
+    let hasChildren=ref(getQueryString("hasChildren")||0);
+
     let fields = reactive([]);
     let buttons = reactive([]);
     let where = ref({});
