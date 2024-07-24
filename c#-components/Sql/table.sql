@@ -37,9 +37,10 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'创建人' , @lev
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'菜单', @level0type=N'SCHEMA', @level0name=N'dbo', @level1type=N'TABLE', @level1name=N'AkdMenu';
 
 insert into AkdMenu(MenuName,ParentID,URL,OrderNum,CreateUserName) 
-values('菜单管理',1,'menu-manager',20,'系统管理员')
+values('菜单管理',1,'table-page',20,'系统管理员')
 insert into AkdMenu(MenuName,ParentID,URL,OrderNum,CreateUserName) 
-values('表单管理',1,'table-manager',30,'表单管理')
+values('表单管理',1,'table-manager',30,'系统管理员')
+
 
 
 drop table AkdTable

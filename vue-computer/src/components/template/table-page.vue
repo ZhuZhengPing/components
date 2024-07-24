@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <div class="top" v-if="form.search.length>0">
+        <div class="top" v-if="fields.search.length>0">
             <temp-search :entity="entity" 
                     :fields="fields.filter(p=>p.IsInSearch>0)" 
                     :buttons="buttons.filter(p=>p.ButtonType==20)" 

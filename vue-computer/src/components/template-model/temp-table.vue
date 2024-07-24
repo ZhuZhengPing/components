@@ -30,6 +30,7 @@
     import {reactive,watch} from 'vue';
     import {SelectList,SelectListPages,GetUserName,SelectFormatFields} from '@/http/index.js';
     import {formatDateByType} from '@/public/index.js';
+    import {TableFormatFunction} from '@/public/template.js';
     
     const props = defineProps({
         entity:String,
@@ -48,11 +49,11 @@
     let total = ref(0);
     let pageIndex=0;
 
-    watch(async () => where.value, (newValue, oldValue) => {
-        where.value = [
+    watch( () => where.value, async(newValue, oldValue) => {
+        where.value = {
             ...where.value,
             ...newValue
-        ];
+        };
         await getData();
     },{deep: true});
 
@@ -101,17 +102,20 @@
     }
 
     async function tableFunctionEvent(row,column,cellValue,index){
+        let tableFunction = targetField.TableFormatFunction;
+        if(!tableFunction){
+            tableFunction = TableFormatFunction;
+        }
+
         let targetField = fields.find(p=>p.FiledName==column.property);
-        if(targetField.TableFormatFunction){
-            if(targetField.TableFormatFunction.constructor.name === 'AsyncFunction'){
-                return await targetField.TableFormatFunction(row,column.property,cellValue,index);
-            }else if(targetField.TableFormatFunction.constructor.name === 'Function'){
-                return targetField.TableFormatFunction(row,column.property,cellValue,index);
-            }else if(targetField.TableFormatFunction.constructor.name ==='Array'){
-                let temp = targetField.TableFormatFunction.find(p=>p.value==cellValue);
-                if(temp){
-                    return temp.text;
-                }
+        if(tableFunction.constructor.name === 'AsyncFunction'){
+            return await tableFunction(row,column.property,cellValue,index);
+        }else if(tableFunction.constructor.name === 'Function'){
+            return tableFunction(row,column.property,cellValue,index);
+        }else if(tableFunction.constructor.name ==='Array'){
+            let temp = tableFunction.find(p=>p.value==cellValue);
+            if(temp){
+                return temp.text;
             }
         }
         return cellValue;

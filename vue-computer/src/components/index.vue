@@ -1,9 +1,10 @@
 <template>
     <div class="container-index">
         <div class="menu-index">
-            <el-menu @select="selectMenuEvent" background-color="#545c64"
-                             text-color="#fff"
-                             active-text-color="#ffd04b">
+            <el-menu @select="selectMenuEvent" 
+                     background-color="#545c64"
+                     text-color="#fff"
+                     active-text-color="#ffd04b">
                 <el-sub-menu v-for="(item) in form.menus" :index="item.ID+''" :key="'submenu-'+item.ID">
                     <template #title>
                         <el-icon :size="16"><Setting /></el-icon>
@@ -49,7 +50,7 @@
 
     let form = reactive({
         menus:[],
-        activeMenu:"",
+        activeMenu:"0",
         openedTabs:[{
             name:"欢迎",
             id:'0',

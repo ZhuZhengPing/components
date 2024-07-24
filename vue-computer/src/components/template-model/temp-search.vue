@@ -112,14 +112,17 @@
     }
 
     async function searchFunctionEvent(field,value){
-        if(field.SelectDataFunction){
-            if(field.SelectDataFunction.constructor.name === 'AsyncFunction'){
-                return await field.SelectDataFunction(field,props.entity,value);
-            }else if(field.SelectDataFunction.constructor.name === 'Function'){
-                return field.SelectDataFunction(field,props.entity,value);
-            }else if(field.SelectDataFunction.constructor.name === 'Array'){
-                return field.SelectDataFunction;
-            }
+        let searchFunction = field.SelectDataFunction;
+        if(!searchFunction){
+            searchFunction = SelectDataFunction;
+        }
+
+        if(searchFunction.constructor.name === 'AsyncFunction'){
+            return await searchFunction(field,props.entity,value);
+        }else if(searchFunction.constructor.name === 'Function'){
+            return searchFunction(field,props.entity,value);
+        }else if(searchFunction.constructor.name === 'Array'){
+            return searchFunction;
         }
         return [];
     }
