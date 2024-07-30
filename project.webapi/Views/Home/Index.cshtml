@@ -1,0 +1,178 @@
+﻿﻿
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>用户登录</title>
+    <link href="~/elementui.2.15.10.css" rel="stylesheet" />
+    <link href="~/base.css" rel="stylesheet" />
+    <script src="~/Ajax.js"></script>
+    <script src="~/Vue2.7.13.js"></script>
+    <script src="~/Elementui.2.15.10.js"></script>
+    <style>
+
+        body {
+            font-size: 14px;
+            background-color: rgb(224, 228, 232);
+            background-image: url(/bg.jpg);
+            background-size: cover;
+        }
+
+        input {
+            padding: 0;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .controls {
+            position: relative;
+            margin-bottom: 20px;
+            color: #c0c4cc;
+        }
+
+            .controls i {
+                font-size: 16px;
+                line-height: 40px;
+            }
+
+            .controls label {
+                width: 40px;
+                height: 40px;
+                line-height: 40px;
+                text-align: center;
+                /*color: #fff;
+                background-color: #ccc;*/
+                position: absolute;
+                display: block;
+                left: 1px;
+                bottom: 1px;
+            }
+
+            .controls input {
+                border-color: #f1eeee;
+                border: 1px solid #DCDFE6;
+                height: 40px;
+                outline: none;
+                font-size: 14px;
+                padding-left: 40px;
+                display: block;
+                width: calc(100% - 42px);
+                color: #606266;
+                border-radius: 4px;
+            }
+
+                .controls input:focus {
+                    outline: none;
+                    border-color: #1890ff;
+                }
+
+        .bottons {
+            width: 100%;
+            color: #FFFFFF;
+            background-color: #1890ff;
+            border: 1px solid #1890ff;
+            outline: 0;
+            height: 40px;
+            border-radius: 3px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+            .bottons:hover {
+                background: #46a6ff;
+                border-color: #46a6ff;
+                color: #FFFFFF;
+            }
+
+        .title {
+            margin-bottom: 30px;
+            font-size: 18px;
+            color: #3c3c3c;
+            text-align: center;
+            color: #707070;
+            font-weight: normal;
+        }
+
+        .container {
+            padding: 20px 30px 30px 30px;
+            background-color: #fff;
+            margin: 0 auto;
+            width: 300px;
+            border-radius: 6px;
+            top: 50%;
+            position: relative;
+            margin-top: -134px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <h1 class="title">后台管理系统</h1>
+        <div class="controls">
+            <label>
+                <i class="el-icon-user-solid"></i>
+            </label>
+            <input type="text" id="txtUserName" placeholder="账户" />
+        </div>
+        <div class="controls">
+            <label><i class="el-icon-lock"></i></label><input type="password" id="txtPassword" placeholder="密码" />
+        </div>
+
+        <div>
+            <button class="bottons" id="buttDenglu" @{ @Html.Raw("@")  }click="doLogin()">登 录</button>
+        </div>
+    </div>
+
+    <script>
+
+        new Vue({
+            el: '#container',
+            methods: {
+                doLogin() {
+                    var name = document.getElementById("txtUserName").value.replace(/^\s+$/, "");
+                    var pass = document.getElementById("txtPassword").value.replace(/^\s+$/, "");
+
+                    if (!name) {
+                        this.$message({
+                            message: '请输入账户',
+                            type: 'error'
+                        });
+                        document.getElementById("txtUserName").focus();
+                        return;
+                    }
+
+                    if (!pass) {
+                        this.$message({
+                            message: '请输入密码',
+                            type: 'error'
+                        });
+                        document.getElementById("txtPassword").focus();
+                        return;
+                    }
+                    var that = this;
+                    http.post("/Back/DoLogin", {
+                        UserID: name,
+                        Password: pass
+                    }).then(function (res) {
+                        if (res.isSuccess == true) {
+                            location.href = "/Home/Index";
+                            localStorage.setItem("UserName", res.data);
+                        } else {
+                            that.$message({
+                                message: res.message,
+                                type: 'error'
+                            });
+                        }
+                    });
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>

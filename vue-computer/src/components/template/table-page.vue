@@ -62,31 +62,5 @@
     }
 </script>
 <style scoped lang="scss">
-
     @import "@/scss/layout-top-middle.scss"
-
-
-    // .container{
-    //     display: flex;
-    //     flex-direction: column;
-    //     height: 100%;
-
-    //     .banner{
-    //         flex:none;
-    //         padding:5px;
-    //         display: flex;
-    //         align-items: center;
-    //         box-shadow: 0px 1px 5px #ccc;
-    //         margin-bottom: 5px;
-    //         flex-wrap: wrap;
-    //     }
-
-    //     .content{
-    //         flex:auto;
-    //         height: 100%;
-    //         box-shadow: 0px 1px 5px #ccc;
-    //         display: flex;
-    //         flex-direction: column;
-    //     }
-    // }
 </style>

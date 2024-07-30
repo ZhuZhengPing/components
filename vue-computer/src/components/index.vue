@@ -96,8 +96,6 @@
         console.log(tab);
         const index = form.openedTabs.findIndex(t => t.id == tab);
         form.openedTabs.splice(index, 1);
-
-        
     }
 </script>
 
