@@ -32,13 +32,13 @@ const router =  createRouter({
     ]
 });
 
-router.beforeEach((to,form,next)=>{
-    if(to.meta.index>form.meta.index){
-        to.meta.transition = "router-back";
-    }else{
-        to.meta.transition = "router-next";
-    }
-    next();
-});
+// router.beforeEach((to,form,next)=>{
+//     if(to.meta.index>form.meta.index){
+//         to.meta.transition = "router-back";
+//     }else{
+//         to.meta.transition = "router-next";
+//     }
+//     next();
+// });
 
 export default router;

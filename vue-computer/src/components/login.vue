@@ -20,10 +20,10 @@
 </template>
 
 <script setup>
-    import {reactive} from "vue"
-    import { ElMessage } from 'element-plus'
-    import {DoLogin,SetToken} from '@/http/index.js'
-    import { useRouter} from 'vue-router'
+    import {reactive} from "vue";
+    import { ElMessage } from 'element-plus';
+    import {DoLogin,SetToken} from '@/http/index.js';
+    import { useRouter} from 'vue-router';
 
     const router = useRouter();
 
@@ -33,7 +33,6 @@
     });
 
     function doLoginEvent() {
-        // remove blank spaces
         user.UserID = user.UserID.replace(/^\s+|\s+$/,"");
         user.Password = user.Password.replace(/^\s+|\s+$/,"");
         if(!user.UserID){

@@ -31,7 +31,6 @@ namespace c__components.Controllers
         [HttpPost]
         public async Task<IActionResult> DoLogin(DoLoginModel model)
         {
-            // 取出后台用户信息
             DatUser user = await _dapper.Query<DatUser>($" select * from AkdUser where userid='{model.UserID}' ");
             if (user == null)
             {
@@ -50,6 +49,21 @@ namespace c__components.Controllers
               userId=user.UserID,
               userName=user.UserName
             }.FormatResult());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePassword(UpdatePassword model)
+        {
+            if (!string.IsNullOrWhiteSpace(model.Token))
+            {
+                return Ok("".FormatResult("缺少参数"));
+            }
+            DoLoginJWT jwt = _jwt.Decrypt(model.Token);
+            if (jwt == null)
+            {
+                return Ok("".FormatResult("参数有误"));
+            }
+            DatUser user = await _dapper.Query<DatUser>($" select * from AkdUser where userid='{jwt.UserID}' ");
         }
 
         [HttpGet]

@@ -46,7 +46,7 @@
                 line-height: 40px;
                 text-align: center;
                 /*color: #fff;
-                background-color: #ccc;*/
+                        background-color: #ccc;*/
                 position: absolute;
                 display: block;
                 left: 1px;
@@ -124,7 +124,9 @@
         </div>
 
         <div>
-            <button class="bottons" id="buttDenglu" @{ @Html.Raw("@")  }click="doLogin()">登 录</button>
+            <button class="bottons" id="buttDenglu" @{
+                @Html.Raw("@")
+            }click="doLogin()">登 录</button>
         </div>
     </div>
 

@@ -25,15 +25,16 @@
     import { getQueryString } from '@/public/index.js';
     import tempSearch from '@/components/template-model/temp-search.vue';
     import tempTable from '@/components/template-model/temp-table.vue';
+    import { useRoute } from 'vue-router';
+    const route = useRoute();
 
-    let entity = ref(getQueryString("entity"));
-    
+    let entity = ref(route.query.entity||"");
     let pageSize = ref(0);
-    let page = getQueryString("page");
+    let page = route.query.page;
     if(page){
-        pageSize=20;
+        pageSize.value=20;
     }
-    let hasChildren=ref(getQueryString("hasChildren")||0);
+    let hasChildren=ref(route.query.hasChildren||0);
 
     let fields = reactive([]);
     let buttons = reactive([]);
@@ -54,7 +55,7 @@
     }
 
     function searchEvent(data) {
-        // where = data;
+        where = data;
     }
 
     function tableEvent(row){

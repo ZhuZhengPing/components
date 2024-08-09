@@ -41,8 +41,6 @@ values('菜单管理',1,'table-page',20,'系统管理员')
 insert into AkdMenu(MenuName,ParentID,URL,OrderNum,CreateUserName) 
 values('表单管理',1,'table-manager',30,'系统管理员')
 
-
-
 drop table AkdTable
 create table AkdTable
 (

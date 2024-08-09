@@ -36,17 +36,46 @@
                 </el-tabs>
             </div>
         </div>
+
+        <el-dialog title="修改密码" v-model="passowrdForm.dialogVisible" center append-to-body width="385px">
+            <div class="login-container">
+                <div class="controls">
+                    <label>
+                        <el-icon>
+                            <User />
+                        </el-icon>
+                    </label>
+                    <input type="text" v-model.trim="passowrdForm.password" placeholder="新密码" />
+                </div>
+                <div class="controls">
+                    <label>
+                        <el-icon>
+                            <Lock />
+                        </el-icon>
+                    </label>
+                    <input type="password" v-model.trim="passowrdForm.passwordConfirm" placeholder="确认密码" />
+                </div>
+                <div>
+                    <button class="bottons" @click="updatePassword">修改密码</button>
+                </div>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script setup>
     import {reactive,onMounted} from 'vue';
-    import {SelectList,GetUserName} from '@/http/index.js';
-    import {Setting,Menu} from '@element-plus/icons-vue';
+    import {SelectList,GetUserName,SetToken} from '@/http/index.js';
+    import {Setting,Menu,User} from '@element-plus/icons-vue';
+    import { ElMessage } from 'element-plus';
     import { useRouter } from 'vue-router';
-    
 
     const router = useRouter();
     let menusAll=[];
+    let passowrdForm = reactive({
+        dialogVisible:false,
+        password:"",
+        passwordConfirm:""
+    });
 
     let form = reactive({
         menus:[],
@@ -87,15 +116,55 @@
           name: menu.MenuName,
           url:menu.URL
         });
-        router.push('/index/detail');
+        
+        let tempUrl = menu.URL;
+        let tempUrlArray = menu.URL.split('?');
+        let args={};
+        if(tempUrlArray.length==2){
+            tempUrl = tempUrlArray[1];
+            tempUrlArray = tempUrl.split('&');
+
+            let item = null; 
+            for(var i=0;i<tempUrlArray.length;i++){
+                item = tempUrlArray[i].split('=');
+                args[item[0]] = item[1];
+            }
+        }
+
+        router.push({
+            path:'/index/detail',
+            query:args
+        });
       }
-        form.activeTab=id;
+      form.activeTab=id;
     }
 
     function tabRemoveEvent(tab){
-        console.log(tab);
         const index = form.openedTabs.findIndex(t => t.id == tab);
         form.openedTabs.splice(index, 1);
+    }
+
+    function loginOutEvent(){
+        SetToken("");
+        router.push({
+            path:'/login'
+        });
+    }
+
+    function updatePassword(){
+        if(!passowrdForm.password){
+            ElMessage.error('请输入新密码');
+            return;
+        }
+        if(!passowrdForm.passwordConfirm){
+            ElMessage.error('请输入确认密码');
+            return;
+        }
+        if(passowrdForm.password != passowrdForm.passwordConfirm){
+            ElMessage.error('新密码和确认密码不一致');
+            return;
+        }
+        
     }
 </script>
 

@@ -30,13 +30,16 @@
     import tempSearch from '@/components/template-model/temp-search.vue';
     import tempTable from '@/components/template-model/temp-table.vue';
     import tempTabs from '@/components/template-model/temp-tabs.vue';
+    import { useRoute } from 'vue-router';
+    const route = useRoute();
 
-    let entity = ref(getQueryString("entity"));
-    let pageSize = ref(getQueryString("pageSize"));
+    let entity = ref(route.query.entity);
+    let pageSize = ref(route.query.pageSize||20);
+    let entitys = reactive(route.query.tabEntity.split(","));
+    
     let fields = reactive([]);
     let buttons = reactive([]);
     let where = ref({});
-    let entitys = reactive(getQueryString("tabEntity").split(","));
     let parentData = ref({});
 
     init();
